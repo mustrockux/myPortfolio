@@ -1,0 +1,182 @@
+<h2 class="sr-only">Distributed tracing visualization: animated microservice topology and a 280ms trace timeline across 6 service spans</h2>
+<style>
+.wf-bar{transition:width 1s cubic-bezier(.4,0,.2,1);width:0}
+</style>
+<div style="padding:.5rem 0;font-family:var(--font-mono)">
+
+  <div style="display:flex;justify-content:space-between;align-items:center;padding:.35rem .75rem;border:.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);margin-bottom:.75rem;background:var(--color-background-secondary);font-size:11px">
+    <div style="display:flex;gap:1.25rem;color:var(--color-text-secondary)">
+      <span style="color:var(--color-text-primary)">TRACE</span>
+      <span>7f3a9c2b-d8e1-4f52-b3c7</span>
+      <span style="opacity:.65">2026-05-09 · 14:32:07.248 UTC</span>
+    </div>
+    <div style="display:flex;gap:1rem;color:var(--color-text-secondary)">
+      <span>6 spans</span>
+      <span style="color:var(--color-text-primary)">280ms</span>
+      <span style="color:#1D9E75">● OK</span>
+    </div>
+  </div>
+
+  <svg width="100%" viewBox="0 0 680 258" role="img">
+    <title>Service topology for trace 7f3a9c2b</title>
+    <desc>API Gateway connects to Auth Service and User Service in the middleware tier. Auth Service calls Product Service and User Service calls Order Service in the business tier. Both Product and Order query a PostgreSQL database.</desc>
+    <defs>
+      <marker id="a2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </marker>
+    </defs>
+
+    <text class="ts" x="80" y="20" text-anchor="middle">ingress</text>
+    <text class="ts" x="248" y="20" text-anchor="middle">middleware</text>
+    <text class="ts" x="432" y="20" text-anchor="middle">business</text>
+    <text class="ts" x="600" y="20" text-anchor="middle">data</text>
+
+    <line x1="165" y1="26" x2="165" y2="236" stroke="var(--color-border-tertiary)" stroke-width="0.5" stroke-dasharray="3 5"/>
+    <line x1="340" y1="26" x2="340" y2="236" stroke="var(--color-border-tertiary)" stroke-width="0.5" stroke-dasharray="3 5"/>
+    <line x1="516" y1="26" x2="516" y2="236" stroke="var(--color-border-tertiary)" stroke-width="0.5" stroke-dasharray="3 5"/>
+
+    <line x1="111" y1="121" x2="219" y2="90" stroke="var(--color-border-secondary)" stroke-width=".75" stroke-dasharray="5 4"/>
+    <line x1="110" y1="141" x2="220" y2="182" stroke="var(--color-border-secondary)" stroke-width=".75" stroke-dasharray="5 4"/>
+    <line x1="278" y1="82" x2="402" y2="82" stroke="var(--color-border-secondary)" stroke-width=".75" stroke-dasharray="5 4"/>
+    <line x1="278" y1="192" x2="402" y2="192" stroke="var(--color-border-secondary)" stroke-width=".75" stroke-dasharray="5 4"/>
+    <line x1="461" y1="90" x2="571" y2="122" stroke="var(--color-border-secondary)" stroke-width=".75" stroke-dasharray="5 4"/>
+    <line x1="460" y1="182" x2="572" y2="140" stroke="var(--color-border-secondary)" stroke-width=".75" stroke-dasharray="5 4"/>
+
+    <circle r="3.5" fill="#7F77DD"><animateMotion path="M111,121 L219,90" dur="1.8s" repeatCount="indefinite" begin="0s"/></circle>
+    <circle r="3.5" fill="#7F77DD" opacity=".4"><animateMotion path="M111,121 L219,90" dur="1.8s" repeatCount="indefinite" begin=".9s"/></circle>
+    <circle r="3.5" fill="#1D9E75"><animateMotion path="M110,141 L220,182" dur="2.1s" repeatCount="indefinite" begin=".25s"/></circle>
+    <circle r="3.5" fill="#1D9E75" opacity=".4"><animateMotion path="M110,141 L220,182" dur="2.1s" repeatCount="indefinite" begin="1.3s"/></circle>
+    <circle r="3.5" fill="#1D9E75"><animateMotion path="M278,82 L402,82" dur="1.4s" repeatCount="indefinite" begin=".15s"/></circle>
+    <circle r="3.5" fill="#1D9E75" opacity=".4"><animateMotion path="M278,82 L402,82" dur="1.4s" repeatCount="indefinite" begin=".85s"/></circle>
+    <circle r="3.5" fill="#1D9E75"><animateMotion path="M278,192 L402,192" dur="1.4s" repeatCount="indefinite" begin=".45s"/></circle>
+    <circle r="3.5" fill="#1D9E75" opacity=".4"><animateMotion path="M278,192 L402,192" dur="1.4s" repeatCount="indefinite" begin="1.15s"/></circle>
+    <circle r="3.5" fill="#378ADD"><animateMotion path="M461,90 L571,122" dur="1.6s" repeatCount="indefinite" begin=".05s"/></circle>
+    <circle r="3.5" fill="#378ADD" opacity=".4"><animateMotion path="M461,90 L571,122" dur="1.6s" repeatCount="indefinite" begin=".85s"/></circle>
+    <circle r="3.5" fill="#D85A30"><animateMotion path="M460,182 L572,140" dur="1.6s" repeatCount="indefinite" begin=".55s"/></circle>
+    <circle r="3.5" fill="#D85A30" opacity=".4"><animateMotion path="M460,182 L572,140" dur="1.6s" repeatCount="indefinite" begin="1.35s"/></circle>
+
+    <g class="c-purple"><circle cx="80" cy="130" r="32" stroke-width="1"/><text class="th" x="80" y="130" text-anchor="middle" dominant-baseline="central">GW</text></g>
+    <text class="ts" x="80" y="172" text-anchor="middle">api-gateway</text>
+
+    <g class="c-teal"><circle cx="248" cy="82" r="30" stroke-width="1"/><text class="th" x="248" y="82" text-anchor="middle" dominant-baseline="central">auth</text></g>
+    <text class="ts" x="248" y="122" text-anchor="middle">auth-service</text>
+
+    <g class="c-teal"><circle cx="248" cy="192" r="30" stroke-width="1"/><text class="th" x="248" y="192" text-anchor="middle" dominant-baseline="central">user</text></g>
+    <text class="ts" x="248" y="232" text-anchor="middle">user-service</text>
+
+    <g class="c-blue"><circle cx="432" cy="82" r="30" stroke-width="1"/><text class="th" x="432" y="82" text-anchor="middle" dominant-baseline="central">prod</text></g>
+    <text class="ts" x="432" y="122" text-anchor="middle">product-svc</text>
+
+    <g class="c-coral"><circle cx="432" cy="192" r="30" stroke-width="1"/><text class="th" x="432" y="192" text-anchor="middle" dominant-baseline="central">order</text></g>
+    <text class="ts" x="432" y="232" text-anchor="middle">order-svc</text>
+
+    <g class="c-amber"><circle cx="600" cy="130" r="30" stroke-width="1"/><text class="th" x="600" y="130" text-anchor="middle" dominant-baseline="central">DB</text></g>
+    <text class="ts" x="600" y="172" text-anchor="middle">postgresql</text>
+  </svg>
+
+  <div style="border:.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;margin-top:.5rem">
+
+    <div style="display:flex;align-items:center;padding:.35rem 1rem;border-bottom:.5px solid var(--color-border-tertiary);background:var(--color-background-secondary);gap:.75rem;font-size:10px;color:var(--color-text-tertiary)">
+      <div style="min-width:136px">SPAN</div>
+      <div style="flex:1;position:relative">
+        <span style="position:absolute;left:0%">0</span>
+        <span style="position:absolute;left:25%;transform:translateX(-50%)">70ms</span>
+        <span style="position:absolute;left:50%;transform:translateX(-50%)">140ms</span>
+        <span style="position:absolute;left:75%;transform:translateX(-50%)">210ms</span>
+        <span style="position:absolute;left:100%;transform:translateX(-100%)">280ms</span>
+        <div style="height:10px"></div>
+      </div>
+      <div style="min-width:46px;text-align:right">DUR</div>
+    </div>
+
+    <div style="display:flex;align-items:center;padding:.4rem 1rem;border-bottom:.5px solid var(--color-border-tertiary);gap:.75rem;font-size:11px">
+      <div style="min-width:136px;display:flex;align-items:center;gap:5px;padding-left:0px">
+        <span style="width:7px;height:7px;border-radius:50%;background:#7F77DD;flex-shrink:0"></span>
+        <span style="color:var(--color-text-primary)">api-gateway</span>
+      </div>
+      <div style="flex:1;height:8px;background:var(--color-background-secondary);border-radius:1px;position:relative;overflow:hidden">
+        <div style="position:absolute;left:25%;top:0;bottom:0;width:.5px;background:var(--color-border-tertiary)"></div>
+        <div style="position:absolute;left:50%;top:0;bottom:0;width:.5px;background:var(--color-border-tertiary)"></div>
+        <div style="position:absolute;left:75%;top:0;bottom:0;width:.5px;background:var(--color-border-tertiary)"></div>
+        <div class="wf-bar" data-w="100%" style="position:absolute;left:0%;top:0;height:100%;background:#7F77DD;border-radius:1px;transition-duration:1.2s;transition-delay:.15s"></div>
+      </div>
+      <div style="min-width:46px;color:var(--color-text-secondary);text-align:right">280ms</div>
+    </div>
+
+    <div style="display:flex;align-items:center;padding:.4rem 1rem;border-bottom:.5px solid var(--color-border-tertiary);gap:.75rem;font-size:11px">
+      <div style="min-width:136px;display:flex;align-items:center;gap:5px;padding-left:12px">
+        <span style="width:7px;height:7px;border-radius:50%;background:#1D9E75;flex-shrink:0"></span>
+        <span style="color:var(--color-text-primary)">auth-svc</span>
+      </div>
+      <div style="flex:1;height:8px;background:var(--color-background-secondary);border-radius:1px;position:relative;overflow:hidden">
+        <div style="position:absolute;left:25%;top:0;bottom:0;width:.5px;background:var(--color-border-tertiary)"></div>
+        <div style="position:absolute;left:50%;top:0;bottom:0;width:.5px;background:var(--color-border-tertiary)"></div>
+        <div style="position:absolute;left:75%;top:0;bottom:0;width:.5px;background:var(--color-border-tertiary)"></div>
+        <div class="wf-bar" data-w="24.3%" style="position:absolute;left:3.6%;top:0;height:100%;background:#1D9E75;border-radius:1px;transition-duration:.8s;transition-delay:.3s"></div>
+      </div>
+      <div style="min-width:46px;color:var(--color-text-secondary);text-align:right">68ms</div>
+    </div>
+
+    <div style="display:flex;align-items:center;padding:.4rem 1rem;border-bottom:.5px solid var(--color-border-tertiary);gap:.75rem;font-size:11px">
+      <div style="min-width:136px;display:flex;align-items:center;gap:5px;padding-left:12px">
+        <span style="width:7px;height:7px;border-radius:50%;background:#1D9E75;flex-shrink:0"></span>
+        <span style="color:var(--color-text-primary)">user-svc</span>
+      </div>
+      <div style="flex:1;height:8px;background:var(--color-background-secondary);border-radius:1px;position:relative;overflow:hidden">
+        <div style="position:absolute;left:25%;top:0;bottom:0;width:.5px;background:var(--color-border-tertiary)"></div>
+        <div style="position:absolute;left:50%;top:0;bottom:0;width:.5px;background:var(--color-border-tertiary)"></div>
+        <div style="position:absolute;left:75%;top:0;bottom:0;width:.5px;background:var(--color-border-tertiary)"></div>
+        <div class="wf-bar" data-w="34.3%" style="position:absolute;left:32.1%;top:0;height:100%;background:#1D9E75;border-radius:1px;transition-duration:.9s;transition-delay:.45s"></div>
+      </div>
+      <div style="min-width:46px;color:var(--color-text-secondary);text-align:right">96ms</div>
+    </div>
+
+    <div style="display:flex;align-items:center;padding:.4rem 1rem;border-bottom:.5px solid var(--color-border-tertiary);gap:.75rem;font-size:11px">
+      <div style="min-width:136px;display:flex;align-items:center;gap:5px;padding-left:24px">
+        <span style="width:7px;height:7px;border-radius:50%;background:#378ADD;flex-shrink:0"></span>
+        <span style="color:var(--color-text-primary)">product-svc</span>
+      </div>
+      <div style="flex:1;height:8px;background:var(--color-background-secondary);border-radius:1px;position:relative;overflow:hidden">
+        <div style="position:absolute;left:25%;top:0;bottom:0;width:.5px;background:var(--color-border-tertiary)"></div>
+        <div style="position:absolute;left:50%;top:0;bottom:0;width:.5px;background:var(--color-border-tertiary)"></div>
+        <div style="position:absolute;left:75%;top:0;bottom:0;width:.5px;background:var(--color-border-tertiary)"></div>
+        <div class="wf-bar" data-w="22.1%" style="position:absolute;left:33.9%;top:0;height:100%;background:#378ADD;border-radius:1px;transition-duration:.7s;transition-delay:.6s"></div>
+      </div>
+      <div style="min-width:46px;color:var(--color-text-secondary);text-align:right">62ms</div>
+    </div>
+
+    <div style="display:flex;align-items:center;padding:.4rem 1rem;border-bottom:.5px solid var(--color-border-tertiary);gap:.75rem;font-size:11px">
+      <div style="min-width:136px;display:flex;align-items:center;gap:5px;padding-left:24px">
+        <span style="width:7px;height:7px;border-radius:50%;background:#D85A30;flex-shrink:0"></span>
+        <span style="color:var(--color-text-primary)">order-svc</span>
+      </div>
+      <div style="flex:1;height:8px;background:var(--color-background-secondary);border-radius:1px;position:relative;overflow:hidden">
+        <div style="position:absolute;left:25%;top:0;bottom:0;width:.5px;background:var(--color-border-tertiary)"></div>
+        <div style="position:absolute;left:50%;top:0;bottom:0;width:.5px;background:var(--color-border-tertiary)"></div>
+        <div style="position:absolute;left:75%;top:0;bottom:0;width:.5px;background:var(--color-border-tertiary)"></div>
+        <div class="wf-bar" data-w="25%" style="position:absolute;left:46.4%;top:0;height:100%;background:#D85A30;border-radius:1px;transition-duration:.8s;transition-delay:.75s"></div>
+      </div>
+      <div style="min-width:46px;color:var(--color-text-secondary);text-align:right">70ms</div>
+    </div>
+
+    <div style="display:flex;align-items:center;padding:.4rem 1rem;gap:.75rem;font-size:11px">
+      <div style="min-width:136px;display:flex;align-items:center;gap:5px;padding-left:36px">
+        <span style="width:7px;height:7px;border-radius:50%;background:#BA7517;flex-shrink:0"></span>
+        <span style="color:var(--color-text-primary)">postgres</span>
+      </div>
+      <div style="flex:1;height:8px;background:var(--color-background-secondary);border-radius:1px;position:relative;overflow:hidden">
+        <div style="position:absolute;left:25%;top:0;bottom:0;width:.5px;background:var(--color-border-tertiary)"></div>
+        <div style="position:absolute;left:50%;top:0;bottom:0;width:.5px;background:var(--color-border-tertiary)"></div>
+        <div style="position:absolute;left:75%;top:0;bottom:0;width:.5px;background:var(--color-border-tertiary)"></div>
+        <div class="wf-bar" data-w="25.4%" style="position:absolute;left:50%;top:0;height:100%;background:#BA7517;border-radius:1px;transition-duration:.8s;transition-delay:.9s"></div>
+      </div>
+      <div style="min-width:46px;color:var(--color-text-secondary);text-align:right">71ms</div>
+    </div>
+
+  </div>
+</div>
+<script>
+requestAnimationFrame(function(){requestAnimationFrame(function(){
+  document.querySelectorAll('.wf-bar').forEach(function(el){el.style.width=el.dataset.w});
+})});
+</script>

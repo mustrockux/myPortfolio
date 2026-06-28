@@ -1,0 +1,86 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --background: oklch(0.97 0.015 80);
+  --foreground: oklch(0.14 0.005 286);
+  --card: oklch(0.97 0.015 80);
+  --card-foreground: oklch(0.14 0.005 286);
+  --popover: oklch(0.97 0.015 80);
+  --popover-foreground: oklch(0.14 0.005 286);
+  --primary: oklch(0.14 0.005 286);
+  --primary-foreground: oklch(0.97 0.015 80);
+  --secondary: oklch(0.93 0.01 80);
+  --secondary-foreground: oklch(0.14 0.005 286);
+  --muted: oklch(0.93 0.01 80);
+  --muted-foreground: oklch(0.55 0.005 286);
+  --accent: oklch(0.93 0.01 80);
+  --accent-foreground: oklch(0.14 0.005 286);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.88 0.008 286);
+  --input: oklch(0.88 0.008 286);
+  --ring: oklch(0.14 0.005 286);
+  --font-lato: 'Lato', sans-serif;
+  --font-bodoni: 'Bodoni Moda', serif;
+}
+
+.dark {
+  --background: oklch(0.14 0.005 286);
+  --foreground: oklch(0.97 0.015 80);
+  --card: oklch(0.14 0.005 286);
+  --card-foreground: oklch(0.97 0.015 80);
+  --popover: oklch(0.14 0.005 286);
+  --popover-foreground: oklch(0.97 0.015 80);
+  --primary: oklch(0.97 0.015 80);
+  --primary-foreground: oklch(0.14 0.005 286);
+  --secondary: oklch(0.20 0.005 286);
+  --secondary-foreground: oklch(0.97 0.015 80);
+  --muted: oklch(0.20 0.005 286);
+  --muted-foreground: oklch(0.65 0.005 286);
+  --accent: oklch(0.20 0.005 286);
+  --accent-foreground: oklch(0.97 0.015 80);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(0.25 0.005 286);
+  --input: oklch(0.25 0.005 286);
+  --ring: oklch(0.97 0.015 80);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    margin: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

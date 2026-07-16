@@ -9,6 +9,8 @@ import { MyProcess } from './components/MyProcess';
 import { ProcessPage } from './components/ProcessPage';
 import { WhatShapesMe } from './components/WhatShapesMe';
 import { ContactForm } from './components/ContactForm';
+import { BlogList, type BlogPostMeta } from './components/BlogList';
+import { BlogPost } from './components/BlogPost';
 import balanceIcon from 'figma:asset/92bce02428686bcce9c41d88339ae8a5646ebba0.png';
 import penIcon from "figma:asset/6cd455197da7d4377698c1048f1f62600c81c809.png";
 import processIcon from "figma:asset/69f971fcb27c459905b38880b1dd3f5e80470fc3.png";
@@ -143,6 +145,19 @@ export default function App() {
   const [showWhatShapesMe, setShowWhatShapesMe] = useState(false);
   const [showComingSoon, setShowComingSoon] = useState(false);
   const [showContactForm, setShowContactForm] = useState(false);
+  const [showBlog, setShowBlog] = useState(false);
+  const [selectedPost, setSelectedPost] = useState<BlogPostMeta | null>(null);
+
+  const blogPosts: BlogPostMeta[] = [
+    {
+      id: 'designers-stop-thinking-in-screens',
+      title: 'Designers Should Stop Thinking in Screens',
+      subtitle: 'And other things I had to learn the hard way.',
+      date: 'July 2026',
+      readTime: '14 min read',
+      tags: ['Systems Thinking', 'Product Design', 'AI'],
+    },
+  ];
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [hasScrolled, setHasScrolled] = useState(false);
@@ -266,6 +281,32 @@ export default function App() {
       <AnimatePresence>
         {showWhatShapesMe && (
           <WhatShapesMe onClose={() => setShowWhatShapesMe(false)} />
+        )}
+      </AnimatePresence>
+
+      {/* Blog Post - Full Screen Overlay */}
+      <AnimatePresence>
+        {selectedPost && (
+          <div className="fixed inset-0 bg-background z-[90] overflow-y-auto">
+            <BlogPost
+              post={selectedPost}
+              onClose={() => { setSelectedPost(null); setShowBlog(false); }}
+              onBack={() => setSelectedPost(null)}
+            />
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Blog List - Full Screen Overlay */}
+      <AnimatePresence>
+        {showBlog && !selectedPost && (
+          <div className="fixed inset-0 bg-background z-[80] overflow-y-auto">
+            <BlogList
+              posts={blogPosts}
+              onPostClick={(post) => setSelectedPost(post)}
+              onClose={() => setShowBlog(false)}
+            />
+          </div>
         )}
       </AnimatePresence>
 
@@ -486,7 +527,7 @@ export default function App() {
       {/* Content wrapper with padding for fixed nav */}
       <div className="pt-[88px]">
         {/* Hero Section - Stark and Spacious - Hide immediately when project selected */}
-        {!selectedProject && !showResume && !showProcessPage && !showWhatShapesMe && (
+        {!selectedProject && !showResume && !showProcessPage && !showWhatShapesMe && !showBlog && !selectedPost && (
           <AnimatePresence>
             <motion.section 
               key="hero"
@@ -597,7 +638,7 @@ export default function App() {
         )}
 
         {/* Secondary Navigation - starts at bottom of hero, sticks to top on scroll */}
-        {!selectedProject && !showResume && !showProcessPage && !showWhatShapesMe && (
+        {!selectedProject && !showResume && !showProcessPage && !showWhatShapesMe && !showBlog && !selectedPost && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -686,12 +727,26 @@ export default function App() {
                 MY RESUME
                 <span className="absolute bottom-0 left-0 w-0 h-[1px] bg-[hsl(301,68%,69%)] group-hover:w-full transition-all duration-100"></span>
               </motion.a>
+              <motion.a
+                whileHover={{ color: 'hsl(301, 68%, 69%)' }}
+                transition={{ duration: 0.1 }}
+                href="#blog"
+                className="text-sm tracking-[0.1em] relative group"
+                style={{ fontWeight: 900 }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setShowBlog(true);
+                }}
+              >
+                MY WRITING
+                <span className="absolute bottom-0 left-0 w-0 h-[1px] bg-[hsl(301,68%,69%)] group-hover:w-full transition-all duration-100"></span>
+              </motion.a>
             </div>
           </motion.div>
         )}
 
         {/* My Process Section */}
-        {!selectedProject && !showResume && !showProcessPage && !showWhatShapesMe && (
+        {!selectedProject && !showResume && !showProcessPage && !showWhatShapesMe && !showBlog && !selectedPost && (
           <MyProcess onLearnMore={() => setShowProcessPage(true)} />
         )}
 
@@ -799,7 +854,7 @@ export default function App() {
 
         {/* About Me Section */}
         <AnimatePresence mode="wait">
-          {!selectedProject && !showResume && !showProcessPage && !showWhatShapesMe && (
+          {!selectedProject && !showResume && !showProcessPage && !showWhatShapesMe && !showBlog && !selectedPost && (
             <motion.section
               key="about"
               initial={{ opacity: 0 }}
@@ -932,7 +987,7 @@ export default function App() {
         </AnimatePresence>
 
         {/* Footer - Minimal */}
-        {!selectedProject && !showResume && !showProcessPage && !showWhatShapesMe && (
+        {!selectedProject && !showResume && !showProcessPage && !showWhatShapesMe && !showBlog && !selectedPost && (
           <motion.footer
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

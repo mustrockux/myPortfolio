@@ -505,6 +505,19 @@ export default function App() {
                 </motion.a>
                 <motion.a
                   whileHover={{ x: 8, color: 'hsl(301, 68%, 69%)' }}
+                  href="#blog"
+                  className="text-lg tracking-[0.1em] py-3 border-b border-border/30"
+                  style={{ fontWeight: 900 }}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setMobileMenuOpen(false);
+                    setTimeout(() => setShowBlog(true), 300);
+                  }}
+                >
+                  MY WRITING
+                </motion.a>
+                <motion.a
+                  whileHover={{ x: 8, color: 'hsl(301, 68%, 69%)' }}
                   href="#resume"
                   className="text-lg tracking-[0.1em] py-3 border-b border-border/30"
                   style={{ fontWeight: 900 }}
@@ -513,7 +526,7 @@ export default function App() {
                     setMobileMenuOpen(false);
                     setTimeout(() => {
                       setShowResume(true);
-                    }, 300); // Wait for menu close animation
+                    }, 300);
                   }}
                 >
                   MY RESUME

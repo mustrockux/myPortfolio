@@ -3,6 +3,9 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "workspaces": [
+    "design-system"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "vite build",

@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Mail, ChevronRight } from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { ProjectGrid } from './components/ProjectGrid';
 import { ProjectDetail } from './components/ProjectDetail';
 import { Resume } from './components/Resume';
@@ -138,15 +139,8 @@ const projects: Project[] = [
 ];
 
 export default function App() {
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
-  const [hoveredNavItem, setHoveredNavItem] = useState<string | null>(null);
-  const [showResume, setShowResume] = useState(false);
-  const [showProcessPage, setShowProcessPage] = useState(false);
-  const [showWhatShapesMe, setShowWhatShapesMe] = useState(false);
-  const [showComingSoon, setShowComingSoon] = useState(false);
-  const [showContactForm, setShowContactForm] = useState(false);
-  const [showBlog, setShowBlog] = useState(false);
-  const [selectedPost, setSelectedPost] = useState<BlogPostMeta | null>(null);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const blogPosts: BlogPostMeta[] = [
     {
@@ -158,11 +152,23 @@ export default function App() {
       tags: ['Systems Thinking', 'Product Design', 'AI'],
     },
   ];
+  const [hoveredNavItem, setHoveredNavItem] = useState<string | null>(null);
+  const [showComingSoon, setShowComingSoon] = useState(false);
+  const [showContactForm, setShowContactForm] = useState(false);
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [hasScrolled, setHasScrolled] = useState(false);
   const savedScrollPosition = useRef<number>(0);
   const lastViewedProjectId = useRef<number | null>(null);
+
+  // Derive page state from URL
+  const path = location.pathname;
+  const showBlog = path === '/blog';
+  const selectedPost = path.startsWith('/blog/') ? (blogPosts.find(p => p.id === path.replace('/blog/', '')) ?? null) : null;
+  const showResume = path === '/resume';
+  const showProcessPage = path === '/process';
+  const showWhatShapesMe = path === '/about';
+  const selectedProject = path.startsWith('/work/') ? (projects.find(p => p.id === Number(path.replace('/work/', ''))) ?? null) : null;
 
   // Track whether user has scrolled
   useEffect(() => {
@@ -171,59 +177,36 @@ export default function App() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // Handle opening a project - save scroll position and scroll to top
+  // Handle opening a project - save scroll position and navigate
   const handleOpenProject = (project: Project) => {
     savedScrollPosition.current = window.scrollY;
     lastViewedProjectId.current = project.id;
-    setSelectedProject(project);
-    // Delay scroll to top until after exit animation completes (0.3s)
-    setTimeout(() => {
-      window.scrollTo({ top: 0, behavior: 'instant' });
-    }, 300);
+    navigate(`/work/${project.id}`);
+    setTimeout(() => window.scrollTo({ top: 0, behavior: 'instant' }), 300);
   };
 
-  // Handle closing a project - scroll to the specific project
+  // Handle closing a project - navigate home and scroll to project
   const handleCloseProject = () => {
-    setSelectedProject(null);
-    // Delay scroll to the specific project until after exit animation completes and DOM updates
+    navigate('/');
     setTimeout(() => {
-      if (lastViewedProjectId.current) {
-        const projectElement = document.getElementById(`project-${lastViewedProjectId.current}`);
-        if (projectElement) {
-          const yOffset = -120; // Offset for fixed nav + padding
-          const y = projectElement.getBoundingClientRect().top + window.pageYOffset + yOffset;
-          window.scrollTo({ top: y, behavior: 'smooth' });
-        } else {
-          // If element not found immediately, try again after a short delay
-          setTimeout(() => {
-            const projectElement = document.getElementById(`project-${lastViewedProjectId.current}`);
-            if (projectElement) {
-              const yOffset = -120;
-              const y = projectElement.getBoundingClientRect().top + window.pageYOffset + yOffset;
-              window.scrollTo({ top: y, behavior: 'smooth' });
-            }
-          }, 200);
-        }
-      } else {
-        // Fallback to work section if no project ID is saved
-        const workSection = document.getElementById('work');
-        if (workSection) {
-          const yOffset = -120;
-          const y = workSection.getBoundingClientRect().top + window.pageYOffset + yOffset;
+      const scrollToProject = () => {
+        const el = document.getElementById(`project-${lastViewedProjectId.current}`);
+        if (el) {
+          const y = el.getBoundingClientRect().top + window.pageYOffset - 120;
           window.scrollTo({ top: y, behavior: 'smooth' });
         }
-      }
-    }, 600); // Increased delay to ensure DOM is fully updated
+      };
+      scrollToProject();
+      setTimeout(scrollToProject, 200);
+    }, 600);
   };
 
   // Handle going to next project
   const handleNextProject = () => {
     if (!selectedProject) return;
     const currentIndex = projects.findIndex(p => p.id === selectedProject.id);
-    const nextIndex = (currentIndex + 1) % projects.length; // Loop back to first if at end
-    const nextProject = projects[nextIndex];
-    setSelectedProject(nextProject);
-    // Scroll to top immediately for next project (already in detail view)
+    const nextProject = projects[(currentIndex + 1) % projects.length];
+    navigate(`/work/${nextProject.id}`);
     window.scrollTo({ top: 0, behavior: 'instant' });
   };
 
@@ -273,14 +256,14 @@ export default function App() {
       {/* Process Page - Full Screen Overlay */}
       <AnimatePresence>
         {showProcessPage && (
-          <ProcessPage onClose={() => setShowProcessPage(false)} />
+          <ProcessPage onClose={() => navigate('/')} />
         )}
       </AnimatePresence>
 
       {/* What Shapes Me Page - Full Screen Overlay */}
       <AnimatePresence>
         {showWhatShapesMe && (
-          <WhatShapesMe onClose={() => setShowWhatShapesMe(false)} />
+          <WhatShapesMe onClose={() => navigate('/')} />
         )}
       </AnimatePresence>
 
@@ -290,8 +273,8 @@ export default function App() {
           <div className="fixed inset-0 bg-background z-[90] overflow-y-auto">
             <BlogPost
               post={selectedPost}
-              onClose={() => { setSelectedPost(null); setShowBlog(false); }}
-              onBack={() => setSelectedPost(null)}
+              onClose={() => navigate('/')}
+              onBack={() => navigate('/blog')}
             />
           </div>
         )}
@@ -303,8 +286,8 @@ export default function App() {
           <div className="fixed inset-0 bg-background z-[80] overflow-y-auto">
             <BlogList
               posts={blogPosts}
-              onPostClick={(post) => setSelectedPost(post)}
-              onClose={() => setShowBlog(false)}
+              onPostClick={(post) => navigate(`/blog/${post.id}`)}
+              onClose={() => navigate('/')}
             />
           </div>
         )}
@@ -323,9 +306,7 @@ export default function App() {
             whileHover={{ opacity: 0.5, color: 'hsl(301, 68%, 69%)' }}
             className="cursor-pointer transition-all duration-100 flex flex-col sm:flex-row items-start sm:items-center gap-1 sm:gap-3"
             onClick={() => {
-              setSelectedProject(null);
-              setShowResume(false);
-              setShowProcessPage(false);
+              navigate('/');
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
           >
@@ -511,7 +492,7 @@ export default function App() {
                   onClick={(e) => {
                     e.preventDefault();
                     setMobileMenuOpen(false);
-                    setTimeout(() => setShowBlog(true), 300);
+                    setTimeout(() => navigate('/blog'), 300);
                   }}
                 >
                   MY WRITING
@@ -524,9 +505,7 @@ export default function App() {
                   onClick={(e) => {
                     e.preventDefault();
                     setMobileMenuOpen(false);
-                    setTimeout(() => {
-                      setShowResume(true);
-                    }, 300);
+                    setTimeout(() => navigate('/resume'), 300);
                   }}
                 >
                   MY RESUME
@@ -732,7 +711,7 @@ export default function App() {
                 style={{ fontWeight: 900 }}
                 onClick={(e) => {
                   e.preventDefault();
-                  setShowResume(true);
+                  navigate('/resume');
                 }}
                 onMouseEnter={() => setHoveredNavItem('resume')}
                 onMouseLeave={() => setHoveredNavItem(null)}
@@ -748,7 +727,7 @@ export default function App() {
                 style={{ fontWeight: 900 }}
                 onClick={(e) => {
                   e.preventDefault();
-                  setShowBlog(true);
+                  navigate('/blog');
                 }}
               >
                 MY WRITING
@@ -760,7 +739,7 @@ export default function App() {
 
         {/* My Process Section */}
         {!selectedProject && !showResume && !showProcessPage && !showWhatShapesMe && !showBlog && !selectedPost && (
-          <MyProcess onLearnMore={() => setShowProcessPage(true)} />
+          <MyProcess onLearnMore={() => navigate('/process')} />
         )}
 
         {/* Projects Section */}
@@ -853,7 +832,7 @@ export default function App() {
           ) : showResume ? (
             <Resume 
               key="resume"
-              onClose={() => setShowResume(false)} 
+              onClose={() => navigate('/')}
             />
           ) : (
             <ProjectDetail 
@@ -974,7 +953,7 @@ export default function App() {
                           whileHover={{ x: 4 }}
                           whileTap={{ scale: 0.98 }}
                           onClick={() => {
-                            setShowWhatShapesMe(true);
+                            navigate('/about');
                           }}
                           className="group py-4 text-foreground hover:text-[#e67ce4] transition-all duration-300 flex items-center gap-2"
                           style={{ 

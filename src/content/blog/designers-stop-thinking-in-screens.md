@@ -7,7 +7,7 @@ readTime: 14 min read
 tags: Systems Thinking, Product Design, AI
 ---
 
-**I have spent a significant portion of my career making things that looked really good and solved the wrong problem.**
+**I have spent a significant portion of my career making things that looked really good that solve the wrong problem.**
 
 Not because I was careless. But because I was screen-first.
 

@@ -7,13 +7,13 @@ readTime: 14 min read
 tags: Systems Thinking, Product Design, AI
 ---
 
-*I have spent a significant portion of my career making things that looked really good and solved the wrong problem.*
+**I have spent a significant portion of my career making things that looked really good and solved the wrong problem.**
 
-Not because I was careless. Because I was screen-first.
+Not because I was careless. But because I was screen-first.
 
-For most of my early career, the screen was my primary unit of thought. I sketched screens. I connected them into flows. I presented polished screens to executives as proof that the product was taking shape. I received feedback like "can we make this panel feel lighter" and spent three days on it. This is normal. This is how most of us are trained.
+For most of my early career, the screen was my primary unit of thought. I sketched screens. I connected them into flows. I presented polished screens to executives as proof that the product was taking shape. I received feedback like "can we make this page feel cleaner" and spent days on it. This is normal. This is how most of us are trained.
 
-The problem is that many of the products we are designing now do not behave like a sequence of pages. They behave like systems.
+The problem is that many of the products we are designing for today do not behave like a sequence of pages. They behave like systems.
 
 They ingest data from multiple sources. They change over time. They respond to permissions, policies, data quality, automations, and conditions that may be completely invisible to the user. Increasingly, they include AI that interprets, recommends, generates, and acts.
 
@@ -21,33 +21,32 @@ The screen is still important. It is just no longer sufficient as the primary fr
 
 ## The heatmap that answered the wrong question
 
-Let me tell you about one of my favorite mistakes.
 
-I was designing Alert Deciphering at Chronosphere — a feature meant to help SREs make sense of alert storms. You know the scenario: something breaks, fifty alerts fire at once, and the person on call has to figure out which one actually matters before their Slack explodes and their VP starts asking questions.
+I was designing a feature that would help a developer who was paged in the middle of the night make sense of alerts during an alert storm at Chronosphere. We called it Alert Deciphering at Chronosphere. You know the scenario: something breaks, fifty alerts fire at once, and the developer on call has to figure out which one actually matters to them before their Slack explodes and their Dev Lead starts asking questions.
 
-I designed a beautiful heatmap.
+I designed a beautiful heat map visualization with our front end engineer.
 
-It showed alert volume over time, grouped by label, filterable by severity, notification policy, duration, and more. Visually, it was genuinely satisfying. The interactions were considered. The information density was elegant.
+It showed alert volume over time, grouped by label, filterable by severity, notification policy, duration, and more. Visually, it was genuinely satisfying. The interactions were considered. The information density was elegant. The filering was intuitive. But there was one significant issue.
 
-There was one small issue.
+We were answering the wrong questions.
 
-Nobody woke up at 3am and thought: I wonder what the ecosystem of this alert storm looks like across labels over time.
+No one woke up at 3am and wondered: What is the ecosystem of this alert storm across labels over time.
 
-They thought: Which alert is the root cause? Which one should I actually care about right now?
+They thought: Which alert is the root cause? Which one should I actually care about right now? Am I responsible for it?
 
-We had built a sophisticated tool for analyzing alert patterns. Our users needed a tool for triaging alert urgency. These are related problems, but they are not the same problem. And we had spent months optimizing for the version we had designed rather than the question users were actually trying to answer.
+We had built a sophisticated tool for analyzing alert patterns but our users needed a tool for triaging alert urgency. These are related problems, but they are not the same problem. We had spent months optimizing for the version we had designed rather than the question users were actually trying to answer.
 
-The heatmap was beautiful. The question it answered was ours, not theirs.
+The heatmap was beautiful but the question it answered was ours, not theirs.
 
 ![Alert Deciphering heatmap — Chronosphere](/src/imports/alert-deciphering-heatmap.png)
 
 ## When we defined the technology instead of the job
 
-Around the same time, our team was working on a feature around cost control — a way for teams to manage observability spend at the platform level.
+Around the same time, our team was working on a set of features around cost control — a way for teams to manage observability volume first, and then spend at the platform level.
 
-Our team wanted to define the semantics of this new technology. What is a sampling rule? What does it control? What does it act on? How do you configure it? When do you need it? How do you use it? We spent real time building out this conceptual model.
+Our team wanted to define the semantics of this new technology. What is a sampling rule? What does it control? What does it act on? How do you configure it? When do you need it? How do you use it? 
 
-The problem was we were defining it in isolation.
+We spent real time building out this conceptual model. The problem was we were defining it in isolation.
 
 We were not asking: who is actually going to touch this? What are they trying to accomplish when they open this part of the product? What is the mental model of an SRE who has to report budget usage up to a CFO or CTO?
 
@@ -57,11 +56,7 @@ The sampling rule is a mechanism. The user's goal is something else entirely. An
 
 ## A screen is a snapshot, not the experience
 
-This is the thing about screens: a screen captures one moment in a product.
-
-It shows the user what the system knows right now, what actions are currently available, and how the product has chosen to represent its internal state.
-
-But the user's experience usually began much earlier.
+This is the thing about screens: a screen captures one moment in a product. It shows the user what the system knows right now, what actions are currently available, and how the product has chosen to represent its internal state. But the user's experience usually began much earlier.
 
 Maybe a developer installed a collector three days ago. Maybe a policy was configured by someone who has since left the team. Maybe an alert was triggered, suppressed, reassigned, or merged with another one before anyone looked at the interface.
 
@@ -73,7 +68,7 @@ The interface exposes these conditions. It does not create them.
 
 Service design has long recognized this distinction. Nielsen Norman Group describes user experience as what the user encounters, while service design examines how the organization creates and supports that experience behind the scenes.¹ Government service teams have similarly documented the need to map user needs, journeys, screen flows, and how the whole service operates — not just the visible layer.²
 
-## The danger of making the visible layer too early
+## The danger of exposing the visible layer too early
 
 Design tools make it very easy to create visible progress.
 
@@ -97,27 +92,26 @@ These are sometimes legitimate questions. But they are easy questions. And they 
 - Can the action be reversed?
 - What should the system learn from what just happened?
 
-The danger is not that we are designing screens. The danger is that the screen becomes a substitute for understanding the product.
+### The danger is not that we are designing screens. The danger is that the screen becomes a substitute for understanding the product.
 
 Nielsen Norman Group has argued that as standardized components, design systems, and AI reduce the cost of producing UI, the value of design moves further upstream.³ When almost anyone can generate a plausible interface in an afternoon, the differentiating work is defining what the product should understand, how it should behave, and how it should help people make better decisions.
 
-Figuring out what color the badge should be is not that work.
 
 ## Complex products are networks of state
 
 This became clearest to me while designing observability and developer tools — a domain where the gap between the screen and the system is particularly unforgiving.
 
-An SRE looking at an alert is not simply reading information on a page. They are trying to reconstruct what is happening inside a dynamic technical environment that may have changed three times since the alert fired.
+An SRE tying to "root-cause" an alert is not simply reading information on a page. They are trying to reconstruct what is happening inside a dynamic technical environment that may have changed three times since the alert fired.
 
-The alert has a history. It came from a rule. The rule evaluated telemetry. The telemetry came from services and infrastructure. The data may have been transformed, aggregated, delayed, sampled, or mislabeled along the way. The alert may be one symptom of a broader incident. Someone else may already be investigating it. An automation may have already acted on it. The problem may have resolved before the UI updated.
+The alert has a history. It came from a rule that evaluated telemetry, and the telemetry came from services and infrastructure. The data may have been transformed, aggregated, delayed, sampled, or mislabeled along the way. The alert may be one symptom of a broader incident. Someone else may already be investigating it. An automation may have already acted on it. The problem may have resolved before the UI updated.
 
-This is why a beautifully designed red status badge can still fail completely.
+This is why a beautifully designed red status badge can still fail to communicate this complexity.
 
 "Error" describes what the system observed. It does not tell you what failed, when it failed, whether it is still failing, what you should do, or whether you are even the right person to act.
 
 A screen-centric response redesigns the badge. A systems-oriented response asks: how is status determined? What events contribute to it? How is freshness communicated? Are states mutually exclusive? How does the user move from detection to diagnosis? What feedback does the system receive after someone intervenes?
 
-The second response may eventually produce a better badge. But the badge is the endpoint of the reasoning, not the beginning.
+The second response may eventually produce a better, more contextual badge. But the badge is the endpoint of the reasoning, not the beginning.
 
 ## Systems thinking changes the questions we ask
 

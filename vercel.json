@@ -2,7 +2,23 @@
   "buildCommand": "vite build",
   "outputDirectory": "dist",
   "framework": "vite",
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "roxannemustafa.com"
+        }
+      ],
+      "destination": "https://www.roxannemustafa.com/:path*",
+      "permanent": true
+    }
+  ],
   "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
+    {
+      "source": "/((?!robots\\.txt$|sitemap\\.xml$|og-image\\.png$).*)",
+      "destination": "/index.html"
+    }
   ]
 }

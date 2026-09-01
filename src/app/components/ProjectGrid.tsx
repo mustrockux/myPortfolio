@@ -1,5 +1,6 @@
 import { motion, useScroll, useTransform } from "motion/react";
-import type { Project } from "../App";
+import { Link } from "react-router-dom";
+import type { Project } from "../../data/projects";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { ChronosphereThumbnail } from "./ChronosphereThumbnail";
 import { DistributedTracingVisual } from "./DistributedTracingVisual";
@@ -67,9 +68,13 @@ function ProjectCard({ project, index, onProjectClick }: { project: Project; ind
       initial={{ opacity: 0, y: 60 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 1, delay: index * 0.15, ease: [0.22, 1, 0.36, 1] }}
-      className="group cursor-pointer relative"
-      onClick={() => onProjectClick(project)}
+      className="group relative"
     >
+      <Link
+        to={`/work/${project.id}`}
+        className="cursor-pointer block text-inherit no-underline"
+        onClick={() => onProjectClick(project)}
+      >
       {/* Project Info - Minimal */}
       <div className="mb-1">
         <h3 
@@ -179,6 +184,7 @@ function ProjectCard({ project, index, onProjectClick }: { project: Project; ind
           )}
         </motion.div>
       </motion.div>
+      </Link>
     </motion.div>
   );
 }

@@ -12,131 +12,26 @@ import { WhatShapesMe } from './components/WhatShapesMe';
 import { ContactForm } from './components/ContactForm';
 import { BlogList, type BlogPostMeta } from './components/BlogList';
 import { BlogPost } from './components/BlogPost';
+import { featuredCaseStudies, projects, type Project } from '../data/projects';
+import { Seo } from '../seo/Seo';
+import {
+  ABOUT_DESCRIPTION,
+  ABOUT_TITLE,
+  HOME_DESCRIPTION,
+  HOME_H1,
+  HOME_INTRO,
+  HOME_POSITIONING,
+  HOME_TITLE,
+  LINKEDIN_URL,
+  personJsonLd,
+  profilePageJsonLd,
+} from '../seo/config';
 import balanceIcon from 'figma:asset/92bce02428686bcce9c41d88339ae8a5646ebba0.png';
 import penIcon from "figma:asset/6cd455197da7d4377698c1048f1f62600c81c809.png";
 import processIcon from "figma:asset/69f971fcb27c459905b38880b1dd3f5e80470fc3.png";
 import silhouetteIcon from "figma:asset/536f24100731a9befdf4d6309a65b02ad3e752a4.png";
 import envelopeIcon from "figma:asset/64a28fdf8d2a5a7526064de053ab45beae465e54.png";
 import resumeIcon from "figma:asset/9db0df807aed7acc3ac181bebee92c4292e50e26.png";
-import ddxImage from "figma:asset/59a3acf14a3ec77089ad2f0e718ebacc04bfe3f7.png";
-import tanzuImage from "figma:asset/9f27433a26381eeb76fca51157321fc96efbdba6.png";
-import pimcoImage from "figma:asset/39dee249425481024c7c65d018b4c9c60f1ab7e3.png";
-import onboardingImage from "figma:asset/d10532e2ac62cc0c3ec9f6599a0ed8f441f4b480.png";
-import traceControlImage from "figma:asset/5d9c8fef4356aa5715e4c3f61ba6f6300045ab81.png";
-
-export interface Project {
-  id: number;
-  title: string;
-  client: string;
-  year: string;
-  description: string;
-  tags: string[];
-  coverImage: string;
-  images: string[];
-}
-
-const projects: Project[] = [
-  {
-    id: 1,
-    title: "Developer Onboarding",
-    client: "Chronosphere",
-    year: "2025",
-    description: "Designed a comprehensive onboarding experience that guides new developers through the Chronosphere platform. Created interactive tutorials, contextual help, and progressive disclosure patterns that reduce time-to-value and increase product adoption across engineering teams.",
-    tags: ["Design Leadership", "Practice Growth", "Product Strategy", "Service Design", "Visual Design", "X-Function Collaboration"],
-    coverImage: onboardingImage,
-    images: [onboardingImage]
-  },
-  {
-    id: 2,
-    title: "Alert Deciphering",
-    client: "Chronosphere",
-    year: "2025",
-    description: "Designed an intelligent alert management system that helps teams quickly understand and respond to critical system issues. The interface prioritizes clarity and actionability in high-pressure situations.",
-    tags: ["AI-Workflow", "Data Visualization", "Design Leadership", "Mentorship", "Product Strategy", "Visual Design", "X-Function Collaboration"],
-    coverImage: "https://images.unsplash.com/photo-1586036308218-5ed6553c98b6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxhc2lhJTIwbWFwJTIwZGF0YSUyMHZpc3VhbGl6YXRpb24lMjBhbGVydHN8ZW58MXx8fHwxNzY1MjQ2NDMzfDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-    images: ["https://images.unsplash.com/photo-1586036308218-5ed6553c98b6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxhc2lhJTIwbWFwJTIwZGF0YSUyMHZpc3VhbGl6YXRpb24lMjBhbGVydHN8ZW58MXx8fHwxNzY1MjQ2NDMzfDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"]
-  },
-  {
-    id: 4,
-    title: "Trace Control Plane",
-    client: "Chronosphere",
-    year: "2024",
-    description: "Led the design of a sophisticated control plane for managing distributed tracing at scale. Created intuitive controls for sampling strategies, data retention policies, and trace routing that empower platform teams to optimize observability costs while maintaining critical visibility.",
-    tags: ["Data Visualization", "Design Leadership", "Product Strategy", "Visual Design", "X-Function Collaboration"],
-    coverImage: traceControlImage,
-    images: [traceControlImage]
-  },
-  {
-    id: 5,
-    title: "Differential Diagnosis (DDx)",
-    client: "Chronosphere",
-    year: "2024",
-    description: "Led the design of an advanced differential diagnosis tool that empowers SREs to compare system states and pinpoint root causes. Established a cohesive design system for data-dense interfaces while maintaining clarity and usability.",
-    tags: ["Data Visualization", "Design Leadership", "Product Strategy", "Visual Design", "X-Function Collaboration"],
-    coverImage: ddxImage,
-    images: [ddxImage]
-  },
-  {
-    id: 6,
-    title: "Distributed Tracing",
-    client: "Chronosphere",
-    year: "2023",
-    description: "Designed an intuitive distributed tracing interface that helps engineers quickly identify performance bottlenecks across microservices. Created a visual language that transforms complex trace data into actionable insights, reducing mean time to resolution by 60%.",
-    tags: ["Design Leadership", "Mentorship", "Practice Growth", "Product Strategy", "Visual Design", "X-Function Collaboration"],
-    coverImage: "https://images.unsplash.com/photo-1664526937033-fe2c11f1be25?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkaXN0cmlidXRlZCUyMHRyYWNpbmclMjBtaWNyb3NlcnZpY2VzfGVufDF8fHx8MTc2NTk4NzI0OXww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-    images: ["https://images.unsplash.com/photo-1664526937033-fe2c11f1be25?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkaXN0cmlidXRlZCUyMHRyYWNpbmclMjBtaWNyb3NlcnZpY2VzfGVufDF8fHx8MTc2NTk4NzI0OXww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"]
-  },
-  {
-    id: 3,
-    title: "Comments & Collaboration",
-    client: "Chronosphere",
-    year: "2025",
-    description: "Created an intuitive commenting and collaboration interface that enables teams to discuss metrics, traces, and alerts in context. Designed threaded conversations and @mentions to facilitate asynchronous team communication and decision-making around observability data.",
-    tags: ["Design Leadership", "Mentorship", "Product Strategy", "Visual Design", "X-Function Collaboration"],
-    coverImage: "https://images.unsplash.com/photo-1590649681928-4b179f773bd5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1200&h=1200",
-    images: ["https://images.unsplash.com/photo-1590649681928-4b179f773bd5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1200&h=1200"]
-  },
-  {
-    id: 7,
-    title: "Data & Insights",
-    client: "Spotify",
-    year: "2022",
-    description: "As a Design Lead, I helped lead the creation of a comprehensive data visualization and analytics platform that empowers experimentation engineers, data scientists and machine learning engineers to understand their audience. I also managed product designers to work with cross-functional teams that deliver internal tools that drive strategic insights for Spotify's Engineering Community that serves millions of creators and listeners worldwide.",
-    tags: ["Data Visualization", "Design Leadership", "Mentorship", "Practice Growth", "Product Strategy", "Service Design", "X-Function Collaboration"],
-    coverImage: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtdWx0aXBsZSUyMHNjcmVlbnMlMjBkYXRhJTIwdmlzdWFsaXphdGlvbnxlbnwxfHx8fDE3NjU4MzE4Nzh8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-    images: ["https://images.unsplash.com/photo-1551288049-bebda4e38f71?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtdWx0aXBsZSUyMHNjcmVlbnMlMjBkYXRhJTIwdmlzdWFsaXphdGlvbnxlbnwxfHx8fDE3NjU4MzE4Nzh8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"]
-  },
-  {
-    id: 8,
-    title: "Tanzu App Transformer",
-    client: "VMware",
-    year: "2021",
-    description: "As Product Design Lead, designed an innovative platform that helps enterprises modernize legacy applications for cloud-native environments. Translated complex technical workflows into intuitive experiences that accelerate digital transformation initiatives.",
-    tags: ["Data Visualization", "Design Leadership", "Product Strategy", "Service Design", "Visual Design", "X-Function Collaboration"],
-    coverImage: "https://images.unsplash.com/photo-1692460049267-4a19daeb3ce9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxrdWJlcm5ldGVzJTIwY29udGFpbmVycyUyMG1vZGVybnxlbnwxfHx8fDE3NjU4MzQzNDV8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-    images: ["https://images.unsplash.com/photo-1692460049267-4a19daeb3ce9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxrdWJlcm5ldGVzJTIwY29udGFpbmVycyUyMG1vZGVybnxlbnwxfHx8fDE3NjU4MzQzNDV8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"]
-  },
-  {
-    id: 9,
-    title: "Tracker Redesign",
-    client: "Pivotal",
-    year: "2019",
-    description: "Served as Product Design Lead and Manager for a complete platform redesign. Modernized the agile project management experience while maintaining the speed and efficiency that teams depend on. Led design strategy, user research, and execution across web and mobile.",
-    tags: ["Data Visualization", "Design Leadership", "Mentorship", "Practice Growth", "Product Strategy", "Service Design", "X-Function Collaboration"],
-    coverImage: "https://images.unsplash.com/photo-1611224885990-ab7363d1f2a9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1200&h=1200",
-    images: ["https://images.unsplash.com/photo-1611224885990-ab7363d1f2a9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1200&h=1200"]
-  },
-  {
-    id: 10,
-    title: "Project Rioja",
-    client: "PIMCO",
-    year: "2018",
-    description: "Led product design for a sophisticated investment management platform serving institutional clients. Created elegant interfaces for complex financial instruments while ensuring regulatory compliance and building trust through thoughtful design decisions.",
-    tags: ["Design Leadership", "Practice Growth", "Product Strategy", "Service Design", "Visual Design", "X-Function Collaboration"],
-    coverImage: pimcoImage,
-    images: [pimcoImage]
-  }
-];
 
 export default function App() {
   const navigate = useNavigate();
@@ -181,7 +76,6 @@ export default function App() {
   const handleOpenProject = (project: Project) => {
     savedScrollPosition.current = window.scrollY;
     lastViewedProjectId.current = project.id;
-    navigate(`/work/${project.id}`);
     setTimeout(() => window.scrollTo({ top: 0, behavior: 'instant' }), 300);
   };
 
@@ -244,8 +138,48 @@ export default function App() {
         project.tags.some(tag => selectedFilters.includes(tag))
       );
 
+  let seoTitle = HOME_TITLE;
+  let seoDescription = HOME_DESCRIPTION;
+  let seoPath = '/';
+  const seoJsonLd: unknown[] = showWhatShapesMe
+    ? [personJsonLd(), profilePageJsonLd()]
+    : [personJsonLd()];
+
+  if (showWhatShapesMe) {
+    seoTitle = ABOUT_TITLE;
+    seoDescription = ABOUT_DESCRIPTION;
+    seoPath = '/about';
+    seoJsonLd.push(profilePageJsonLd());
+  } else if (selectedProject) {
+    seoTitle = `${selectedProject.title} | Roxanne Mustafa`;
+    seoDescription = selectedProject.description;
+    seoPath = `/work/${selectedProject.id}`;
+  } else if (showResume) {
+    seoTitle = 'Resume | Roxanne Mustafa';
+    seoDescription = HOME_DESCRIPTION;
+    seoPath = '/resume';
+  } else if (showProcessPage) {
+    seoTitle = 'Process | Roxanne Mustafa';
+    seoDescription = HOME_DESCRIPTION;
+    seoPath = '/process';
+  } else if (selectedPost) {
+    seoTitle = `${selectedPost.title} | Roxanne Mustafa`;
+    seoDescription = selectedPost.subtitle;
+    seoPath = `/blog/${selectedPost.id}`;
+  } else if (showBlog) {
+    seoTitle = 'Writing | Roxanne Mustafa';
+    seoDescription = HOME_DESCRIPTION;
+    seoPath = '/blog';
+  }
+
   return (
     <div className="min-h-screen bg-background">
+      <Seo
+        title={seoTitle}
+        description={seoDescription}
+        path={seoPath}
+        jsonLd={seoJsonLd}
+      />
       {/* Coming Soon Page - Full Screen Overlay */}
       <AnimatePresence>
         {showComingSoon && (
@@ -263,7 +197,10 @@ export default function App() {
       {/* What Shapes Me Page - Full Screen Overlay */}
       <AnimatePresence>
         {showWhatShapesMe && (
-          <WhatShapesMe onClose={() => navigate('/')} />
+          <WhatShapesMe
+            onClose={() => navigate('/')}
+            caseStudies={featuredCaseStudies}
+          />
         )}
       </AnimatePresence>
 
@@ -302,10 +239,12 @@ export default function App() {
         style={{ fontFamily: 'var(--font-lato)' }}
       >
         <div className="max-w-[1800px] mx-auto px-4 sm:px-8 md:px-16 py-4 sm:py-6 flex justify-between items-center">
-          <motion.div 
+          <motion.a 
+            href="/"
             whileHover={{ opacity: 0.5, color: 'hsl(301, 68%, 69%)' }}
             className="cursor-pointer transition-all duration-100 flex flex-col sm:flex-row items-start sm:items-center gap-1 sm:gap-3"
-            onClick={() => {
+            onClick={(e) => {
+              e.preventDefault();
               navigate('/');
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
@@ -327,7 +266,7 @@ export default function App() {
             >
               PRODUCT DESIGNER & CREATIVE LEADER
             </span>
-          </motion.div>
+          </motion.a>
           <div className="flex gap-3 items-center">
             {/* Hamburger Menu Button - Visible on md and below */}
             <motion.button
@@ -359,7 +298,7 @@ export default function App() {
             </motion.button>
             <motion.a 
               whileHover={{ opacity: 0.5, borderColor: 'hsl(301, 68%, 69%)', color: 'hsl(301, 68%, 69%)' }}
-              href="https://www.linkedin.com/in/roxannemustafa" 
+              href={LINKEDIN_URL} 
               target="_blank"
               rel="noopener noreferrer"
               className="w-9 h-9 rounded-full border-2 border-foreground flex items-center justify-center transition-all duration-100"
@@ -446,20 +385,13 @@ export default function App() {
                 </motion.a>
                 <motion.a
                   whileHover={{ x: 8, color: 'hsl(301, 68%, 69%)' }}
-                  href="#about"
+                  href="/about"
                   className="text-lg tracking-[0.1em] py-3 border-b border-border/30"
                   style={{ fontWeight: 900 }}
                   onClick={(e) => {
                     e.preventDefault();
                     setMobileMenuOpen(false);
-                    setTimeout(() => {
-                      const element = document.getElementById('about');
-                      if (element) {
-                        const yOffset = -88; // Account for fixed nav height
-                        const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
-                        window.scrollTo({ top: y, behavior: 'smooth' });
-                      }
-                    }, 300); // Wait for menu close animation
+                    setTimeout(() => navigate('/about'), 300);
                   }}
                 >
                   ABOUT ME
@@ -486,7 +418,7 @@ export default function App() {
                 </motion.a>
                 <motion.a
                   whileHover={{ x: 8, color: 'hsl(301, 68%, 69%)' }}
-                  href="#blog"
+                  href="/blog"
                   className="text-lg tracking-[0.1em] py-3 border-b border-border/30"
                   style={{ fontWeight: 900 }}
                   onClick={(e) => {
@@ -499,7 +431,7 @@ export default function App() {
                 </motion.a>
                 <motion.a
                   whileHover={{ x: 8, color: 'hsl(301, 68%, 69%)' }}
-                  href="#resume"
+                  href="/resume"
                   className="text-lg tracking-[0.1em] py-3 border-b border-border/30"
                   style={{ fontWeight: 900 }}
                   onClick={(e) => {
@@ -597,7 +529,7 @@ export default function App() {
                   )}
                 </AnimatePresence>
 
-                {/* Tagline */}
+                {/* Identity and tagline */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -605,9 +537,22 @@ export default function App() {
                   className="max-w-5xl mx-auto text-center relative z-10"
                   style={{ marginTop: '-40px' }}
                 >
-                  <h1 
+                  <h1
                     className="relative z-10"
-                    style={{ 
+                    style={{
+                      fontFamily: 'var(--font-lato)',
+                      fontWeight: 700,
+                      fontSize: '18px',
+                      letterSpacing: '0.1em',
+                      textTransform: 'uppercase',
+                      color: '#1a1a1a',
+                    }}
+                  >
+                    {HOME_H1}
+                  </h1>
+                  <p
+                    className="relative z-10 mt-6"
+                    style={{
                       fontFamily: 'var(--font-bodoni)',
                       fontSize: 'clamp(32px, 8vw, 65px)',
                       fontWeight: 400,
@@ -621,7 +566,7 @@ export default function App() {
                     }}
                   >
                     Design. Balance. Create.
-                  </h1>
+                  </p>
                 </motion.div>
               </div>
 
@@ -674,12 +619,12 @@ export default function App() {
               <motion.a
                 whileHover={{ color: 'hsl(301, 68%, 69%)' }}
                 transition={{ duration: 0.1 }}
-                href="#about"
+                href="/about"
                 className="text-sm tracking-[0.1em] relative group"
                 style={{ fontWeight: 900 }}
                 onClick={(e) => {
                   e.preventDefault();
-                  document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' });
+                  navigate('/about');
                 }}
                 onMouseEnter={() => setHoveredNavItem('about')}
                 onMouseLeave={() => setHoveredNavItem(null)}
@@ -706,7 +651,7 @@ export default function App() {
               <motion.a
                 whileHover={{ color: 'hsl(301, 68%, 69%)' }}
                 transition={{ duration: 0.1 }}
-                href="#resume"
+                href="/resume"
                 className="text-sm tracking-[0.1em] relative group"
                 style={{ fontWeight: 900 }}
                 onClick={(e) => {
@@ -722,7 +667,7 @@ export default function App() {
               <motion.a
                 whileHover={{ color: 'hsl(301, 68%, 69%)' }}
                 transition={{ duration: 0.1 }}
-                href="#blog"
+                href="/blog"
                 className="text-sm tracking-[0.1em] relative group"
                 style={{ fontWeight: 900 }}
                 onClick={(e) => {
@@ -735,6 +680,40 @@ export default function App() {
               </motion.a>
             </div>
           </motion.div>
+        )}
+
+        {!selectedProject && !showResume && !showProcessPage && !showWhatShapesMe && !showBlog && !selectedPost && (
+          <section
+            aria-label="Introduction"
+            className="pt-10 sm:pt-12 md:pt-16 pb-4 px-4 sm:px-8 md:px-16"
+          >
+            <div className="max-w-[1800px] mx-auto">
+              <div className="max-w-3xl">
+                <p
+                  className="text-foreground mb-6"
+                  style={{
+                    fontFamily: 'var(--font-lato)',
+                    fontWeight: 700,
+                    fontSize: '14px',
+                    letterSpacing: '0.04em',
+                    lineHeight: '1.6',
+                  }}
+                >
+                  {HOME_POSITIONING}
+                </p>
+                <p
+                  className="text-foreground"
+                  style={{
+                    fontFamily: '"EB Garamond", Georgia, serif',
+                    fontSize: '20px',
+                    lineHeight: '1.8',
+                  }}
+                >
+                  {HOME_INTRO}
+                </p>
+              </div>
+            </div>
+          </section>
         )}
 
         {/* My Process Section */}
@@ -949,10 +928,12 @@ export default function App() {
                         className="pt-8 flex flex-wrap gap-4 justify-start"
                       >
                         {/* Secondary Link - Learn More */}
-                        <motion.button
+                        <motion.a
+                          href="/about"
                           whileHover={{ x: 4 }}
                           whileTap={{ scale: 0.98 }}
-                          onClick={() => {
+                          onClick={(e) => {
+                            e.preventDefault();
                             navigate('/about');
                           }}
                           className="group py-4 text-foreground hover:text-[#e67ce4] transition-all duration-300 flex items-center gap-2"
@@ -968,7 +949,7 @@ export default function App() {
                             size={16} 
                             className="group-hover:translate-x-1 transition-transform duration-300"
                           />
-                        </motion.button>
+                        </motion.a>
                       </motion.div>
                     </motion.div>
                   </div>
@@ -1070,7 +1051,7 @@ export default function App() {
                       </motion.button>
                       <motion.a 
                         whileHover={{ opacity: 0.5, borderColor: 'hsl(301, 68%, 69%)', color: 'hsl(301, 68%, 69%)' }}
-                        href="https://www.linkedin.com/in/roxannemustafa" 
+                        href={LINKEDIN_URL} 
                         target="_blank"
                         rel="noopener noreferrer"
                         className="w-9 h-9 rounded-full border-2 border-foreground flex items-center justify-center transition-all duration-100"
@@ -1083,6 +1064,26 @@ export default function App() {
                         </svg>
                       </motion.a>
                     </div>
+                    <nav
+                      aria-label="Footer"
+                      className="mt-10 flex flex-wrap gap-6"
+                      style={{ fontFamily: 'var(--font-lato)' }}
+                    >
+                      <a
+                        href="/about"
+                        className="text-foreground hover:text-[#e67ce4] transition-colors duration-300"
+                        style={{ fontWeight: 700, fontSize: '14px', letterSpacing: '0.1em' }}
+                      >
+                        About
+                      </a>
+                      <a
+                        href="/#work"
+                        className="text-foreground hover:text-[#e67ce4] transition-colors duration-300"
+                        style={{ fontWeight: 700, fontSize: '14px', letterSpacing: '0.1em' }}
+                      >
+                        Work
+                      </a>
+                    </nav>
                   </motion.div>
                 </div>
               </div>

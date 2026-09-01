@@ -1,8 +1,10 @@
 import { motion, useScroll, useTransform } from 'motion/react';
 import { X } from 'lucide-react';
 import { useRef } from 'react';
+import { Link } from 'react-router-dom';
+import type { Project } from '../../data/projects';
+import { ABOUT_BIO, ABOUT_H1 } from '../../seo/config';
 import conferenceImage from 'figma:asset/d231690d168aace877e3590ec36899953d768ba4.png';
-import performanceImage from 'figma:asset/a16a1253af0f83d150b2748d0a7f628056de5531.png';
 import audioEngineeringImage from 'figma:asset/0179ede01c91262d3f5550b376a8f81b794d6ec9.png';
 import designWorkshopImage from 'figma:asset/ef0510e639a02617380b3548f142a950929c046c.png';
 import kidsAtPivotalImage from 'figma:asset/e64221f38f3d884005335a99c1bcedc3ecd4607b.png';
@@ -13,9 +15,10 @@ import { MusicPlayer } from './MusicPlayer';
 
 interface WhatShapesMeProps {
   onClose: () => void;
+  caseStudies: Project[];
 }
 
-export function WhatShapesMe({ onClose }: WhatShapesMeProps) {
+export function WhatShapesMe({ onClose, caseStudies }: WhatShapesMeProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Refs for parallax images
@@ -101,10 +104,10 @@ export function WhatShapesMe({ onClose }: WhatShapesMeProps) {
       <div className="max-w-[1800px] mx-auto px-4 sm:px-8 md:px-16 py-24 md:py-32">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 sm:gap-16 lg:gap-24 items-start">
           
-          {/* Header - Shows first on mobile */}
-          <div className="lg:col-span-12 order-1 lg:hidden">
-            <h2 
-              className="text-foreground"
+          {/* Left column - H1 + Pink H2 */}
+          <div className="lg:col-span-4 order-1">
+            <h1 
+              className="mb-8 lg:mb-16 text-foreground"
               style={{ 
                 fontFamily: 'var(--font-lato)', 
                 fontSize: '18px',
@@ -113,30 +116,14 @@ export function WhatShapesMe({ onClose }: WhatShapesMeProps) {
                 letterSpacing: '0.1em'
               }}
             >
-              MORE ABOUT ME
-            </h2>
-          </div>
-
-          {/* Left column - H2 Header + Pink H3 */}
-          <div className="lg:col-span-4 order-2 lg:order-1">
-            <h2 
-              className="mb-16 text-foreground hidden lg:block"
-              style={{ 
-                fontFamily: 'var(--font-lato)', 
-                fontSize: '18px',
-                color: '#1a1a1a',
-                textTransform: 'uppercase',
-                letterSpacing: '0.1em'
-              }}
-            >
-              MORE ABOUT ME
-            </h2>
-            <motion.h3
+              {ABOUT_H1}
+            </h1>
+            <motion.h2
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8 }}
-              className="text-[#e67ce4] sticky top-32"
+              className="text-[#e67ce4] lg:sticky lg:top-32"
               style={{ 
                 fontFamily: '"EB Garamond", Georgia, serif',
                 fontSize: '48px',
@@ -145,7 +132,7 @@ export function WhatShapesMe({ onClose }: WhatShapesMeProps) {
               }}
             >
               Redesigning A Life
-            </motion.h3>
+            </motion.h2>
           </div>
 
           {/* Right column - Content */}
@@ -157,9 +144,60 @@ export function WhatShapesMe({ onClose }: WhatShapesMeProps) {
               transition={{ duration: 0.8, ease: "easeOut" }}
               className="lg:pt-[88px]"
             >
+              <section className="mb-24 md:mb-32">
+                <div className="space-y-8">
+                  {ABOUT_BIO.map((paragraph) => (
+                    <p
+                      key={paragraph}
+                      className="text-foreground"
+                      style={{
+                        fontFamily: '"EB Garamond", Georgia, serif',
+                        fontSize: '20px',
+                        lineHeight: '1.8'
+                      }}
+                    >
+                      {paragraph}
+                    </p>
+                  ))}
+                </div>
+
+                <h2
+                  className="mt-16 mb-8 text-foreground tracking-wider uppercase"
+                  style={{
+                    fontFamily: 'var(--font-lato)',
+                    fontSize: '18px',
+                    letterSpacing: '0.1em',
+                    lineHeight: '19.6px'
+                  }}
+                >
+                  Selected work
+                </h2>
+                <ul className="space-y-4">
+                  {caseStudies.map((project) => (
+                    <li key={project.id}>
+                      <Link
+                        to={`/work/${project.id}`}
+                        className="text-foreground hover:text-[#e67ce4] transition-colors duration-300"
+                        style={{
+                          fontFamily: '"EB Garamond", Georgia, serif',
+                          fontSize: '20px',
+                          lineHeight: '1.6'
+                        }}
+                      >
+                        {project.title}
+                        <span className="text-muted-foreground">
+                          {' '}
+                          · {project.client}
+                        </span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+
               {/* Section 1: Music, Production, and Creative Craft */}
               <section className="mb-24 md:mb-32">
-                <h5
+                <h3
                   className="mb-8 text-foreground tracking-wider uppercase"
                   style={{
                     fontFamily: 'var(--font-lato)',
@@ -169,7 +207,7 @@ export function WhatShapesMe({ onClose }: WhatShapesMeProps) {
                   }}
                 >
                   Music, Production, and Creative Craft
-                </h5>
+                </h3>
 
                 {/* Audio Engineering Image */}
                 <div ref={imageRef1} className="relative overflow-hidden mb-8 max-w-2xl">
@@ -215,7 +253,7 @@ export function WhatShapesMe({ onClose }: WhatShapesMeProps) {
 
               {/* Section 2: A Shift towards Systems and Design */}
               <section className="mb-24 md:mb-32">
-                <h5
+                <h3
                   className="mb-8 text-foreground tracking-wider uppercase"
                   style={{
                     fontFamily: 'var(--font-lato)',
@@ -225,7 +263,7 @@ export function WhatShapesMe({ onClose }: WhatShapesMeProps) {
                   }}
                 >
                   A Shift towards Systems and Design
-                </h5>
+                </h3>
 
                 {/* Design Workshop Image */}
                 <div ref={imageRef2} className="relative overflow-hidden mb-8 max-w-2xl">
@@ -271,7 +309,7 @@ export function WhatShapesMe({ onClose }: WhatShapesMeProps) {
 
               {/* Section 3: Perspective Through Travel and Experience */}
               <section className="mb-24 md:mb-32">
-                <h5
+                <h3
                   className="mb-8 text-foreground tracking-wider uppercase"
                   style={{
                     fontFamily: 'var(--font-lato)',
@@ -281,7 +319,7 @@ export function WhatShapesMe({ onClose }: WhatShapesMeProps) {
                   }}
                 >
                   Perspective Through Travel and Experience
-                </h5>
+                </h3>
 
                 {/* Photography Website Image */}
                 <div ref={imageRef3} className="relative overflow-hidden mb-8 max-w-2xl">
@@ -327,7 +365,7 @@ export function WhatShapesMe({ onClose }: WhatShapesMeProps) {
 
               {/* Section 4: Design as a Way of Thinking */}
               <section className="mb-24 md:mb-32">
-                <h5
+                <h3
                   className="mb-8 text-foreground tracking-wider uppercase"
                   style={{
                     fontFamily: 'var(--font-lato)',
@@ -337,7 +375,7 @@ export function WhatShapesMe({ onClose }: WhatShapesMeProps) {
                   }}
                 >
                   Design as a Way of Thinking
-                </h5>
+                </h3>
 
                 {/* Kids at Pivotal Image */}
                 <div ref={imageRef4} className="relative overflow-hidden mb-8 max-w-2xl">
@@ -373,7 +411,7 @@ export function WhatShapesMe({ onClose }: WhatShapesMeProps) {
 
               {/* Section 5: Community, Responsibility, and Place */}
               <section className="mb-24 md:mb-32">
-                <h5
+                <h3
                   className="mb-8 text-foreground tracking-wider uppercase"
                   style={{
                     fontFamily: 'var(--font-lato)',
@@ -383,7 +421,7 @@ export function WhatShapesMe({ onClose }: WhatShapesMeProps) {
                   }}
                 >
                   Community, Responsibility, and Place
-                </h5>
+                </h3>
 
                 {/* Black at Pivotal Image */}
                 <div ref={imageRef5} className="relative overflow-hidden mb-8 max-w-2xl">
@@ -448,7 +486,7 @@ export function WhatShapesMe({ onClose }: WhatShapesMeProps) {
 
               {/* Section 6: And Life, Too */}
               <section className="mb-16">
-                <h5
+                <h3
                   className="mb-8 text-foreground tracking-wider uppercase"
                   style={{
                     fontFamily: 'var(--font-lato)',
@@ -458,7 +496,7 @@ export function WhatShapesMe({ onClose }: WhatShapesMeProps) {
                   }}
                 >
                   And Life, Too
-                </h5>
+                </h3>
 
                 {/* Luna Image */}
                 <div ref={imageRef7} className="relative overflow-hidden mb-8 max-w-2xl">

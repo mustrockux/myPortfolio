@@ -60,6 +60,14 @@ export default function App() {
   const showWhatShapesMe = path === '/about';
   const selectedProject = path.startsWith('/work/') ? (projects.find(p => p.id === Number(path.replace('/work/', ''))) ?? null) : null;
 
+  // Keep the last viewed case study in sync for every entry path:
+  // homepage clicks, /about links, direct URLs, and next-project navigation.
+  useEffect(() => {
+    if (selectedProject) {
+      lastViewedProjectId.current = selectedProject.id;
+    }
+  }, [selectedProject]);
+
   // Track whether user has scrolled
   useEffect(() => {
     const onScroll = () => setHasScrolled(window.scrollY > 4);
@@ -76,10 +84,16 @@ export default function App() {
 
   // Handle closing a project - navigate home and scroll to project
   const handleCloseProject = () => {
+    const projectId = selectedProject?.id ?? lastViewedProjectId.current;
+    if (projectId != null) {
+      lastViewedProjectId.current = projectId;
+    }
+
     navigate('/');
     setTimeout(() => {
       const scrollToProject = () => {
-        const el = document.getElementById(`project-${lastViewedProjectId.current}`);
+        if (projectId == null) return;
+        const el = document.getElementById(`project-${projectId}`);
         if (el) {
           const y = el.getBoundingClientRect().top + window.pageYOffset - 120;
           window.scrollTo({ top: y, behavior: 'smooth' });
@@ -87,6 +101,7 @@ export default function App() {
       };
       scrollToProject();
       setTimeout(scrollToProject, 200);
+      setTimeout(scrollToProject, 800);
     }, 600);
   };
 

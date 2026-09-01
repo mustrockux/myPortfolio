@@ -2,6 +2,8 @@
   "buildCommand": "vite build",
   "outputDirectory": "dist",
   "framework": "vite",
+  "cleanUrls": true,
+  "trailingSlash": false,
   "redirects": [
     {
       "source": "/:path*",
@@ -17,7 +19,15 @@
   ],
   "rewrites": [
     {
-      "source": "/((?!robots\\.txt$|sitemap\\.xml$|og-image\\.png$).*)",
+      "source": "/about",
+      "destination": "/about.html"
+    },
+    {
+      "source": "/work/:id",
+      "destination": "/work/:id.html"
+    },
+    {
+      "source": "/((?!robots\\.txt$|sitemap\\.xml$|og-image\\.png$|about\\.html$|work/).*)",
       "destination": "/index.html"
     }
   ]

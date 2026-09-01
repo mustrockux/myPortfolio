@@ -15,16 +15,11 @@ import { BlogPost } from './components/BlogPost';
 import { featuredCaseStudies, projects, type Project } from '../data/projects';
 import { Seo } from '../seo/Seo';
 import {
-  ABOUT_DESCRIPTION,
-  ABOUT_TITLE,
-  HOME_DESCRIPTION,
   HOME_H1,
   HOME_INTRO,
   HOME_POSITIONING,
-  HOME_TITLE,
   LINKEDIN_URL,
-  personJsonLd,
-  profilePageJsonLd,
+  getSeoPage,
 } from '../seo/config';
 import balanceIcon from 'figma:asset/92bce02428686bcce9c41d88339ae8a5646ebba0.png';
 import penIcon from "figma:asset/6cd455197da7d4377698c1048f1f62600c81c809.png";
@@ -138,47 +133,21 @@ export default function App() {
         project.tags.some(tag => selectedFilters.includes(tag))
       );
 
-  let seoTitle = HOME_TITLE;
-  let seoDescription = HOME_DESCRIPTION;
-  let seoPath = '/';
-  const seoJsonLd: unknown[] = showWhatShapesMe
-    ? [personJsonLd(), profilePageJsonLd()]
-    : [personJsonLd()];
-
-  if (showWhatShapesMe) {
-    seoTitle = ABOUT_TITLE;
-    seoDescription = ABOUT_DESCRIPTION;
-    seoPath = '/about';
-    seoJsonLd.push(profilePageJsonLd());
-  } else if (selectedProject) {
-    seoTitle = `${selectedProject.title} | Roxanne Mustafa`;
-    seoDescription = selectedProject.description;
-    seoPath = `/work/${selectedProject.id}`;
-  } else if (showResume) {
-    seoTitle = 'Resume | Roxanne Mustafa';
-    seoDescription = HOME_DESCRIPTION;
-    seoPath = '/resume';
-  } else if (showProcessPage) {
-    seoTitle = 'Process | Roxanne Mustafa';
-    seoDescription = HOME_DESCRIPTION;
-    seoPath = '/process';
-  } else if (selectedPost) {
-    seoTitle = `${selectedPost.title} | Roxanne Mustafa`;
-    seoDescription = selectedPost.subtitle;
-    seoPath = `/blog/${selectedPost.id}`;
-  } else if (showBlog) {
-    seoTitle = 'Writing | Roxanne Mustafa';
-    seoDescription = HOME_DESCRIPTION;
-    seoPath = '/blog';
+  const pageSeo = { ...getSeoPage(path) };
+  if (selectedPost) {
+    pageSeo.title = `${selectedPost.title} | Roxanne Mustafa`;
+    pageSeo.description = selectedPost.subtitle;
+    pageSeo.path = `/blog/${selectedPost.id}`;
   }
 
   return (
     <div className="min-h-screen bg-background">
       <Seo
-        title={seoTitle}
-        description={seoDescription}
-        path={seoPath}
-        jsonLd={seoJsonLd}
+        title={pageSeo.title}
+        description={pageSeo.description}
+        path={pageSeo.path}
+        jsonLd={pageSeo.jsonLd}
+        ogType={pageSeo.ogType}
       />
       {/* Coming Soon Page - Full Screen Overlay */}
       <AnimatePresence>

@@ -5,19 +5,20 @@ interface SeoProps {
   description: string
   path: string
   jsonLd?: unknown[]
+  ogType?: 'website' | 'profile'
 }
 
-export function Seo({ title, description, path, jsonLd = [] }: SeoProps) {
+export function Seo({ title, description, path, jsonLd = [], ogType }: SeoProps) {
   const canonical = canonicalUrl(path)
   const image = `${SITE_ORIGIN}${OG_IMAGE_PATH}`
-  const ogType = path === '/about' ? 'profile' : 'website'
+  const type = ogType ?? (path === '/about' ? 'profile' : 'website')
 
   return (
     <>
       <title>{title}</title>
       <meta name="description" content={description} />
       <link rel="canonical" href={canonical} />
-      <meta property="og:type" content={ogType} />
+      <meta property="og:type" content={type} />
       <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />
       <meta property="og:url" content={canonical} />

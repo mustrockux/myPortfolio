@@ -1,6 +1,6 @@
 import { motion } from "motion/react";
 import { ArrowRight, ArrowLeft, X } from "lucide-react";
-import type { Project } from "../App";
+import type { Project } from "../../data/projects";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { DistributedTracingVisual } from "./DistributedTracingVisual";
 import { TraceControlPlaneVisual } from "./TraceControlPlaneVisual";
@@ -80,7 +80,7 @@ export function ProjectDetail({ project, onClose, onNext }: ProjectDetailProps) 
           </h2>
 
           {/* Project Title */}
-          <motion.h3
+          <motion.h1
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -94,7 +94,7 @@ export function ProjectDetail({ project, onClose, onNext }: ProjectDetailProps) 
             }}
           >
             {project.title}
-          </motion.h3>
+          </motion.h1>
 
           {/* Project Meta */}
           <div className="mb-8">

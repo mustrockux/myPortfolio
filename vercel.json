@@ -2,7 +2,33 @@
   "buildCommand": "vite build",
   "outputDirectory": "dist",
   "framework": "vite",
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "roxannemustafa.com"
+        }
+      ],
+      "destination": "https://www.roxannemustafa.com/:path*",
+      "permanent": true
+    }
+  ],
   "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
+    {
+      "source": "/about",
+      "destination": "/about.html"
+    },
+    {
+      "source": "/work/:id",
+      "destination": "/work/:id.html"
+    },
+    {
+      "source": "/((?!robots\\.txt$|sitemap\\.xml$|og-image\\.png$|about\\.html$|work/).*)",
+      "destination": "/index.html"
+    }
   ]
 }

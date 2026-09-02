@@ -122,7 +122,14 @@ export default function App() {
     navigate(spot.pathname || '/');
   };
 
-  const goHomeTop = () => {
+  const goToBlogIndex = () => {
+    const last = returnStack.current[returnStack.current.length - 1];
+    if (last?.pathname === '/blog') {
+      returnStack.current.pop();
+    }
+    pendingRestore.current = null;
+    navigate('/blog');
+  };
     setHoveredNavItem(null);
     returnStack.current = [];
     pendingRestore.current = null;
@@ -293,7 +300,7 @@ export default function App() {
             <BlogPost
               post={selectedPost}
               onClose={closeToOrigin}
-              onBack={() => navigate('/blog')}
+              onBack={goToBlogIndex}
             />
           </div>
         )}

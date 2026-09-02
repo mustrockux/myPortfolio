@@ -134,6 +134,31 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'instant' });
   };
 
+  const scrollToSection = (id: string) => {
+    const element = document.getElementById(id);
+    if (!element) return;
+    const yOffset = -88;
+    const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+    window.scrollTo({ top: y, behavior: 'smooth' });
+  };
+
+  const goToHomeSection = (id: string) => {
+    setHoveredNavItem(null);
+    if (showHomeHero) {
+      scrollToSection(id);
+      return;
+    }
+    navigate(`/#${id}`);
+  };
+
+  useEffect(() => {
+    if (!showHomeHero) return;
+    const id = location.hash.replace(/^#/, '');
+    if (!id) return;
+    const timer = window.setTimeout(() => scrollToSection(id), 80);
+    return () => window.clearTimeout(timer);
+  }, [showHomeHero, location.hash]);
+
   const navIcons: Record<string, string> = {
     'work': penIcon,
     'process': processIcon,
@@ -390,13 +415,13 @@ export default function App() {
                 </motion.a>
                 <motion.a
                   whileHover={{ x: 8, color: 'hsl(301, 68%, 69%)' }}
-                  href="/about"
+                  href="#about"
                   className="text-lg tracking-[0.1em] py-3 border-b border-border/30"
                   style={{ fontWeight: 900 }}
                   onClick={(e) => {
                     e.preventDefault();
                     setMobileMenuOpen(false);
-                    setTimeout(() => navigate('/about'), 300);
+                    setTimeout(() => goToHomeSection('about'), 300);
                   }}
                 >
                   ABOUT ME
@@ -649,13 +674,12 @@ export default function App() {
               <motion.a
                 whileHover={{ color: 'hsl(301, 68%, 69%)' }}
                 transition={{ duration: 0.1 }}
-                href="/about"
+                href="#about"
                 className="text-sm tracking-[0.1em] relative group"
                 style={{ fontWeight: 900 }}
                 onClick={(e) => {
                   e.preventDefault();
-                  setHoveredNavItem(null);
-                  navigate('/about');
+                  goToHomeSection('about');
                 }}
                 onMouseEnter={() => setHoveredNavItem('about')}
                 onMouseLeave={() => setHoveredNavItem(null)}
@@ -1069,7 +1093,7 @@ export default function App() {
                       style={{ fontFamily: 'var(--font-lato)' }}
                     >
                       <a
-                        href="/about"
+                        href="#about"
                         className="text-foreground hover:text-[#e67ce4] transition-colors duration-300"
                         style={{ fontWeight: 700, fontSize: '14px', letterSpacing: '0.1em' }}
                       >

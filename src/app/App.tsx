@@ -50,6 +50,7 @@ export default function App() {
   const lastViewedProjectId = useRef<number | null>(null);
   const returnStack = useRef<Array<{ pathname: string; hash: string; scrollY: number }>>([]);
   const pendingRestore = useRef<{ pathname: string; hash: string; scrollY: number } | null>(null);
+  const projectTopTimer = useRef<number | null>(null);
 
   // Derive page state from URL
   const path = location.pathname;
@@ -112,6 +113,10 @@ export default function App() {
 
   const closeToOrigin = () => {
     setHoveredNavItem(null);
+    if (projectTopTimer.current != null) {
+      window.clearTimeout(projectTopTimer.current);
+      projectTopTimer.current = null;
+    }
     const spot = returnStack.current.pop() ?? { pathname: '/', hash: '', scrollY: 0 };
     pendingRestore.current = spot;
     navigate(spot.pathname || '/');
@@ -144,7 +149,15 @@ export default function App() {
 
   const handleOpenProject = (project: Project) => {
     lastViewedProjectId.current = project.id;
-    setTimeout(() => window.scrollTo({ top: 0, behavior: 'instant' }), 300);
+    if (projectTopTimer.current != null) {
+      window.clearTimeout(projectTopTimer.current);
+    }
+    projectTopTimer.current = window.setTimeout(() => {
+      if (window.location.pathname.startsWith('/work/')) {
+        window.scrollTo({ top: 0, behavior: 'instant' });
+      }
+      projectTopTimer.current = null;
+    }, 300);
   };
 
   const handleCloseProject = () => {
@@ -180,12 +193,18 @@ export default function App() {
   useEffect(() => {
     const spot = pendingRestore.current;
     if (spot && path === (spot.pathname || '/')) {
-      pendingRestore.current = null;
       const apply = () => window.scrollTo({ top: spot.scrollY, behavior: 'instant' });
       apply();
-      const timers = [50, 200, 600].map((ms) => window.setTimeout(apply, ms));
-      return () => timers.forEach((timer) => window.clearTimeout(timer));
+      const timers = [50, 200, 400, 800].map((ms) => window.setTimeout(apply, ms));
+      const done = window.setTimeout(() => {
+        if (pendingRestore.current === spot) pendingRestore.current = null;
+      }, 850);
+      return () => {
+        timers.forEach((timer) => window.clearTimeout(timer));
+        window.clearTimeout(done);
+      };
     }
+    if (pendingRestore.current) return;
     if (!showHomeHero) return;
     const id = location.hash.replace(/^#/, '');
     if (!id) return;

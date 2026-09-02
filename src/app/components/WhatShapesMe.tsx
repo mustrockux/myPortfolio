@@ -3,7 +3,7 @@ import { X } from 'lucide-react';
 import { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import type { Project } from '../../data/projects';
-import { ABOUT_BIO, ABOUT_H1 } from '../../seo/config';
+import { ABOUT_BIO } from '../../seo/config';
 import conferenceImage from 'figma:asset/d231690d168aace877e3590ec36899953d768ba4.png';
 import audioEngineeringImage from 'figma:asset/0179ede01c91262d3f5550b376a8f81b794d6ec9.png';
 import designWorkshopImage from 'figma:asset/ef0510e639a02617380b3548f142a950929c046c.png';
@@ -104,21 +104,9 @@ export function WhatShapesMe({ onClose, caseStudies }: WhatShapesMeProps) {
       <div className="max-w-[1800px] mx-auto px-4 sm:px-8 md:px-16 py-24 md:py-32">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 sm:gap-16 lg:gap-24 items-start">
           
-          {/* Left column - H1 + Pink H2 */}
+          {/* Left column - page title */}
           <div className="lg:col-span-4 order-1">
-            <h1 
-              className="mb-8 lg:mb-16 text-foreground"
-              style={{ 
-                fontFamily: 'var(--font-lato)', 
-                fontSize: '18px',
-                color: '#1a1a1a',
-                textTransform: 'uppercase',
-                letterSpacing: '0.1em'
-              }}
-            >
-              {ABOUT_H1}
-            </h1>
-            <motion.h2
+            <motion.h1
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -132,7 +120,7 @@ export function WhatShapesMe({ onClose, caseStudies }: WhatShapesMeProps) {
               }}
             >
               Redesigning A Life
-            </motion.h2>
+            </motion.h1>
           </div>
 
           {/* Right column - Content */}

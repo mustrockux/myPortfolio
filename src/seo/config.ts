@@ -9,8 +9,11 @@ export const OG_IMAGE_PATH = '/og-image.png'
 export const HOME_TITLE =
   'Roxanne Mustafa | Staff Product Designer, AI & Developer Tools'
 
-export const HOME_DESCRIPTION =
-  'Roxanne Mustafa is a Staff Product Designer specializing in AI, developer tools, observability, and complex enterprise products. Explore selected product design case studies and leadership work.'
+/** Indexed in meta description and Person JSON-LD rather than on-page copy. */
+export const IDENTITY_DESCRIPTION =
+  'Roxanne Mustafa is a Staff Product Designer focused on AI, developer tools, observability, and complex enterprise software.'
+
+export const HOME_DESCRIPTION = `${IDENTITY_DESCRIPTION} Explore selected product design case studies and leadership work.`
 
 export const HOME_H1 = 'Roxanne Mustafa'
 
@@ -22,16 +25,12 @@ export const HOME_INTRO =
 
 export const ABOUT_TITLE = 'About Roxanne Mustafa | Staff Product Designer'
 
-export const ABOUT_DESCRIPTION =
-  'Learn about Roxanne Mustafa, a Staff Product Designer specializing in AI, developer tools, observability, enterprise software, and complex technical systems.'
-
-export const ABOUT_H1 = 'About Roxanne Mustafa'
+export const ABOUT_DESCRIPTION = IDENTITY_DESCRIPTION
 
 export const ABOUT_BIO = [
-  'Roxanne Mustafa is a Staff Product Designer focused on AI, developer tools, observability, and complex enterprise software.',
   'Across her career, Roxanne has designed products and platforms for engineers, data teams, and technical organizations. Her work spans developer experience, machine learning and experimentation, application modernization, cloud infrastructure, and observability.',
   'She has worked across design leadership and senior individual contributor roles at organizations including Pivotal, VMware, Spotify, and Chronosphere. Her approach combines product strategy, systems thinking, user research, interaction design, and close collaboration with engineering and product teams.',
-  'More recently, her work has focused on how AI changes the way engineers investigate systems, make decisions, and operate complex infrastructure, including knowledge graphs, AI-assisted troubleshooting, and new models for developer productivity.',
+  'More recently, she is a Senior Staff Product designer focusing on how AI changes the way engineers investigate systems, make decisions, and operate complex infrastructure, including knowledge graphs, AI-assisted troubleshooting, and new models for developer platforms, tooling and productivity.',
   'She is particularly interested in design problems where powerful technical systems need to become understandable, trustworthy, and actionable.',
 ] as const
 
@@ -39,8 +38,7 @@ export const PERSON_NAME = 'Roxanne Mustafa'
 
 export const PERSON_JOB_TITLE = 'Staff Product Designer'
 
-export const PERSON_DESCRIPTION =
-  'Staff Product Designer specializing in AI, developer tools, observability, and complex enterprise products.'
+export const PERSON_DESCRIPTION = IDENTITY_DESCRIPTION
 
 export const PERSON_KNOWS_ABOUT = [
   'Product Design',

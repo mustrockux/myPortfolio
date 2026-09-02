@@ -123,7 +123,7 @@ export function MyProcess({ onLearnMore }: { onLearnMore?: () => void }) {
                     lineHeight: '1.8'
                   }}
                 >
-                  As a Staff/Principle Product Designer, I help teams understand people, deeply and honestly, in the most complex technical or niche spaces. I use human-centered design, systems thinking, and AI-augmented insight to analyze problems clearly and build solutions responsibly.
+                  As a Staff/Principle Product Designer, I design complex technical products for engineers and enterprise teams. My work spans AI, developer tools, observability, machine learning, and infrastructure, turning technically dense systems into products people can understand and act on. I use human-centered design, systems thinking, and AI-augmented insight to analyze problems clearly and build solutions responsibly. I help teams understand people, deeply and honestly, in the most complex technical or niche spaces.
                 </motion.p>
 
                 <motion.p

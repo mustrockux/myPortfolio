@@ -47,8 +47,9 @@ export default function App() {
   const [showContactForm, setShowContactForm] = useState(false);
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const savedScrollPosition = useRef<number>(0);
   const lastViewedProjectId = useRef<number | null>(null);
+  const returnStack = useRef<Array<{ pathname: string; hash: string; scrollY: number }>>([]);
+  const pendingRestore = useRef<{ pathname: string; hash: string; scrollY: number } | null>(null);
 
   // Derive page state from URL
   const path = location.pathname;
@@ -95,34 +96,59 @@ export default function App() {
     setHoveredNavItem(null);
   }, [path]);
 
-  // Handle opening a project - save scroll position and navigate
+  const captureReturnSpot = () => {
+    const spot = {
+      pathname: location.pathname,
+      hash: location.hash,
+      scrollY: window.scrollY,
+    };
+    const last = returnStack.current[returnStack.current.length - 1];
+    if (last && last.pathname === spot.pathname && last.hash === spot.hash) {
+      last.scrollY = spot.scrollY;
+      return;
+    }
+    returnStack.current.push(spot);
+  };
+
+  const closeToOrigin = () => {
+    setHoveredNavItem(null);
+    const spot = returnStack.current.pop() ?? { pathname: '/', hash: '', scrollY: 0 };
+    pendingRestore.current = spot;
+    navigate(spot.pathname || '/');
+  };
+
+  const goHomeTop = () => {
+    setHoveredNavItem(null);
+    returnStack.current = [];
+    pendingRestore.current = null;
+    navigate('/');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    const onClick = (event: MouseEvent) => {
+      const link = (event.target as Element | null)?.closest?.('a');
+      if (!link) return;
+      const href = link.getAttribute('href');
+      if (!href || link.getAttribute('target') === '_blank') return;
+      if (/^(https?:|mailto:|tel:)/i.test(href)) return;
+      const url = new URL(href, window.location.href);
+      if (url.origin !== window.location.origin) return;
+      if (href.startsWith('#')) return;
+      if (url.pathname === path) return;
+      captureReturnSpot();
+    };
+    document.addEventListener('click', onClick, true);
+    return () => document.removeEventListener('click', onClick, true);
+  }, [path, location.hash, location.pathname]);
+
   const handleOpenProject = (project: Project) => {
-    savedScrollPosition.current = window.scrollY;
     lastViewedProjectId.current = project.id;
     setTimeout(() => window.scrollTo({ top: 0, behavior: 'instant' }), 300);
   };
 
-  // Handle closing a project - navigate home and scroll to project
   const handleCloseProject = () => {
-    const projectId = selectedProject?.id ?? lastViewedProjectId.current;
-    if (projectId != null) {
-      lastViewedProjectId.current = projectId;
-    }
-
-    navigate('/');
-    setTimeout(() => {
-      const scrollToProject = () => {
-        if (projectId == null) return;
-        const el = document.getElementById(`project-${projectId}`);
-        if (el) {
-          const y = el.getBoundingClientRect().top + window.pageYOffset - 120;
-          window.scrollTo({ top: y, behavior: 'smooth' });
-        }
-      };
-      scrollToProject();
-      setTimeout(scrollToProject, 200);
-      setTimeout(scrollToProject, 800);
-    }, 600);
+    closeToOrigin();
   };
 
   // Handle going to next project
@@ -152,12 +178,20 @@ export default function App() {
   };
 
   useEffect(() => {
+    const spot = pendingRestore.current;
+    if (spot && path === (spot.pathname || '/')) {
+      pendingRestore.current = null;
+      const apply = () => window.scrollTo({ top: spot.scrollY, behavior: 'instant' });
+      apply();
+      const timers = [50, 200, 600].map((ms) => window.setTimeout(apply, ms));
+      return () => timers.forEach((timer) => window.clearTimeout(timer));
+    }
     if (!showHomeHero) return;
     const id = location.hash.replace(/^#/, '');
     if (!id) return;
     const timer = window.setTimeout(() => scrollToSection(id), 80);
     return () => window.clearTimeout(timer);
-  }, [showHomeHero, location.hash]);
+  }, [path, showHomeHero, location.hash]);
 
   const navIcons: Record<string, string> = {
     'work': penIcon,
@@ -219,7 +253,7 @@ export default function App() {
       {/* Process Page - Full Screen Overlay */}
       <AnimatePresence>
         {showProcessPage && (
-          <ProcessPage onClose={() => navigate('/')} />
+          <ProcessPage onClose={closeToOrigin} />
         )}
       </AnimatePresence>
 
@@ -227,7 +261,7 @@ export default function App() {
       <AnimatePresence>
         {showWhatShapesMe && (
           <WhatShapesMe
-            onClose={() => navigate('/')}
+            onClose={closeToOrigin}
             caseStudies={featuredCaseStudies}
           />
         )}
@@ -239,8 +273,8 @@ export default function App() {
           <div className="fixed inset-0 bg-background z-[90] overflow-y-auto">
             <BlogPost
               post={selectedPost}
-              onClose={() => navigate('/')}
-              onBack={() => navigate('/blog')}
+              onClose={closeToOrigin}
+              onBack={closeToOrigin}
             />
           </div>
         )}
@@ -252,8 +286,11 @@ export default function App() {
           <div className="fixed inset-0 bg-background z-[80] overflow-y-auto">
             <BlogList
               posts={blogPosts}
-              onPostClick={(post) => navigate(`/blog/${post.id}`)}
-              onClose={() => navigate('/')}
+              onPostClick={(post) => {
+                captureReturnSpot();
+                navigate(`/blog/${post.id}`);
+              }}
+              onClose={closeToOrigin}
             />
           </div>
         )}
@@ -274,9 +311,7 @@ export default function App() {
             className="cursor-pointer transition-colors duration-100 flex flex-col sm:flex-row items-start sm:items-center gap-1 sm:gap-3"
             onClick={(e) => {
               e.preventDefault();
-              setHoveredNavItem(null);
-              navigate('/');
-              window.scrollTo({ top: 0, behavior: 'smooth' });
+              goHomeTop();
             }}
           >
             <span 
@@ -741,7 +776,10 @@ export default function App() {
 
         {/* My Process Section */}
         {showHomeHero && (
-          <MyProcess onLearnMore={() => navigate('/process')} />
+          <MyProcess onLearnMore={() => {
+            captureReturnSpot();
+            navigate('/process');
+          }} />
         )}
 
         {/* Projects Section */}
@@ -834,7 +872,7 @@ export default function App() {
           ) : showResume ? (
             <Resume 
               key="resume"
-              onClose={() => navigate('/')}
+              onClose={closeToOrigin}
             />
           ) : (
             <ProjectDetail 

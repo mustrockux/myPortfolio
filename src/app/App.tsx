@@ -61,6 +61,13 @@ export default function App() {
   const selectedProject = workSegment
     ? (projects.find((p) => p.slug === workSegment || String(p.id) === workSegment) ?? null)
     : null;
+  const showHomeHero =
+    !selectedProject &&
+    !showResume &&
+    !showProcessPage &&
+    !showWhatShapesMe &&
+    !showBlog &&
+    !selectedPost;
 
   useEffect(() => {
     if (path === '/about-me') {
@@ -449,7 +456,7 @@ export default function App() {
       {/* Content wrapper with padding for fixed nav */}
       <div className="pt-[88px]">
         {/* Hero Section - Stark and Spacious - Hide immediately when project selected */}
-        {!selectedProject && !showResume && !showProcessPage && !showWhatShapesMe && !showBlog && !selectedPost && (
+        {showHomeHero && (
           <AnimatePresence>
             <motion.section 
               key="hero"
@@ -464,7 +471,7 @@ export default function App() {
                 {/* Background balance icon - loads first. Focus line is pinned to the
                     image box so it stays just below the see-saw at any viewport. */}
                 <div
-                  className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none"
+                  className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none"
                 >
                   <div className="relative w-full max-w-[1152px]">
                     <motion.div
@@ -520,7 +527,7 @@ export default function App() {
 
                 {/* Hovered navigation icon - appears on nav hover */}
                 <AnimatePresence>
-                  {hoveredNavItem && path === '/' && (
+                  {hoveredNavItem && (
                     <motion.div
                       key={hoveredNavItem}
                       initial={{ opacity: 0, scale: 0.8 }}
@@ -537,8 +544,7 @@ export default function App() {
                           ease: "easeInOut"
                         }
                       }}
-                      className="absolute inset-0 flex items-center justify-center pointer-events-none"
-                      style={{ zIndex: 0 }}
+                      className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none"
                     >
                       <img 
                         src={navIcons[hoveredNavItem]} 
@@ -599,7 +605,7 @@ export default function App() {
         )}
 
         {/* Secondary Navigation - starts at bottom of hero, sticks to top on scroll */}
-        {!selectedProject && !showResume && !showProcessPage && !showWhatShapesMe && !showBlog && !selectedPost && (
+        {showHomeHero && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -710,7 +716,7 @@ export default function App() {
         )}
 
         {/* My Process Section */}
-        {!selectedProject && !showResume && !showProcessPage && !showWhatShapesMe && !showBlog && !selectedPost && (
+        {showHomeHero && (
           <MyProcess onLearnMore={() => navigate('/process')} />
         )}
 
@@ -818,7 +824,7 @@ export default function App() {
 
         {/* About Me Section */}
         <AnimatePresence mode="wait">
-          {!selectedProject && !showResume && !showProcessPage && !showWhatShapesMe && !showBlog && !selectedPost && (
+          {showHomeHero && (
             <motion.section
               key="about"
               initial={{ opacity: 0 }}
@@ -953,7 +959,7 @@ export default function App() {
         </AnimatePresence>
 
         {/* Footer - Minimal */}
-        {!selectedProject && !showResume && !showProcessPage && !showWhatShapesMe && !showBlog && !selectedPost && (
+        {showHomeHero && (
           <motion.footer
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

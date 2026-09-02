@@ -144,7 +144,7 @@ export default function App() {
 
   const goToHomeSection = (id: string) => {
     setHoveredNavItem(null);
-    if (showHomeHero) {
+    if (path === '/') {
       scrollToSection(id);
       return;
     }

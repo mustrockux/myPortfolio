@@ -130,6 +130,8 @@ export default function App() {
     pendingRestore.current = null;
     navigate('/blog');
   };
+
+  const goHomeTop = () => {
     setHoveredNavItem(null);
     returnStack.current = [];
     pendingRestore.current = null;

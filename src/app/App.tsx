@@ -293,7 +293,7 @@ export default function App() {
             <BlogPost
               post={selectedPost}
               onClose={closeToOrigin}
-              onBack={closeToOrigin}
+              onBack={() => navigate('/blog')}
             />
           </div>
         )}

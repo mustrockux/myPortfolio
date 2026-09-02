@@ -462,36 +462,62 @@ export default function App() {
             >
               {/* Hero Content - Takes up remaining space */}
               <div className="flex-1 flex items-center justify-center px-8 md:px-16 relative">
-                {/* Background balance icon - loads first */}
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ 
-                    opacity: hoveredNavItem ? 0 : 0.4, 
-                    scale: 1,
-                    rotate: hoveredNavItem ? 0 : [-1.5, 1.5, -1.5]
-                  }}
-                  transition={{ 
-                    opacity: { duration: 0.6, ease: "easeOut" },
-                    scale: { duration: 0.6, ease: "easeOut" },
-                    rotate: {
-                      duration: 6,
-                      repeat: Infinity,
-                      ease: "easeInOut"
-                    }
-                  }}
-                  className="absolute inset-0 flex items-center justify-center pointer-events-none"
-                  style={{ zIndex: 0 }}
+                {/* Background balance icon - loads first. Focus line is pinned to the
+                    image box so it stays just below the see-saw at any viewport. */}
+                <div
+                  className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none"
                 >
-                  <img 
-                    src={balanceIcon} 
-                    alt="" 
-                    className="w-full h-full object-contain"
-                    style={{ 
-                      maxWidth: '1152px',
-                      maxHeight: '800px'
-                    }}
-                  />
-                </motion.div>
+                  <div className="relative w-full max-w-[1152px]">
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{
+                        opacity: hoveredNavItem ? 0 : 0.4,
+                        scale: 1,
+                        rotate: hoveredNavItem ? 0 : [-1.5, 1.5, -1.5],
+                      }}
+                      transition={{
+                        opacity: { duration: 0.6, ease: "easeOut" },
+                        scale: { duration: 0.6, ease: "easeOut" },
+                        rotate: {
+                          duration: 6,
+                          repeat: Infinity,
+                          ease: "easeInOut",
+                        },
+                      }}
+                    >
+                      <img
+                        src={balanceIcon}
+                        alt=""
+                        className="h-auto w-full object-contain"
+                      />
+                    </motion.div>
+                    <motion.p
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 1, delay: 1.8, ease: "easeOut" }}
+                      className="absolute left-0 right-0 top-full z-10 mt-3 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 px-4"
+                      style={{
+                        fontFamily: "var(--font-lato)",
+                        fontWeight: 700,
+                        fontSize: "11.5px",
+                        letterSpacing: "0.14em",
+                        textTransform: "uppercase",
+                        color: "hsl(0, 0%, 45%)",
+                      }}
+                    >
+                      {HOME_FOCUS_AREAS.map((area, index) => (
+                        <Fragment key={area}>
+                          {index > 0 && (
+                            <span aria-hidden="true" style={{ color: "#e67ce4" }}>
+                              •
+                            </span>
+                          )}
+                          <span>{area}</span>
+                        </Fragment>
+                      ))}
+                    </motion.p>
+                  </div>
+                </div>
 
                 {/* Hovered navigation icon - appears on nav hover */}
                 <AnimatePresence>
@@ -567,33 +593,8 @@ export default function App() {
                     Design. Balance. Create.
                   </p>
                 </motion.div>
-              </div>
 
-              <motion.p
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 1, delay: 1.8, ease: "easeOut" }}
-                className="absolute bottom-8 md:bottom-10 left-0 right-0 z-10 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 px-4"
-                style={{
-                  fontFamily: 'var(--font-lato)',
-                  fontWeight: 700,
-                  fontSize: '11.5px',
-                  letterSpacing: '0.14em',
-                  textTransform: 'uppercase',
-                  color: 'hsl(0, 0%, 45%)',
-                }}
-              >
-                {HOME_FOCUS_AREAS.map((area, index) => (
-                  <Fragment key={area}>
-                    {index > 0 && (
-                      <span aria-hidden="true" style={{ color: '#e67ce4' }}>
-                        •
-                      </span>
-                    )}
-                    <span>{area}</span>
-                  </Fragment>
-                ))}
-              </motion.p>
+              </div>
             </motion.section>
           </AnimatePresence>
         )}

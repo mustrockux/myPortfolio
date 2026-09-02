@@ -47,7 +47,6 @@ export default function App() {
   const [showContactForm, setShowContactForm] = useState(false);
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [hasScrolled, setHasScrolled] = useState(false);
   const savedScrollPosition = useRef<number>(0);
   const lastViewedProjectId = useRef<number | null>(null);
 
@@ -83,12 +82,11 @@ export default function App() {
     }
   }, [selectedProject]);
 
-  // Track whether user has scrolled
+  // Hovered section icons must not persist after leaving (mouseLeave
+  // often does not fire when the secondary nav unmounts on navigation).
   useEffect(() => {
-    const onScroll = () => setHasScrolled(window.scrollY > 4);
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
+    setHoveredNavItem(null);
+  }, [path]);
 
   // Handle opening a project - save scroll position and navigate
   const handleOpenProject = (project: Project) => {
@@ -241,9 +239,10 @@ export default function App() {
           <motion.a 
             href="/"
             whileHover={{ opacity: 0.5, color: 'hsl(301, 68%, 69%)' }}
-            className="cursor-pointer transition-all duration-100 flex flex-col sm:flex-row items-start sm:items-center gap-1 sm:gap-3"
+            className="cursor-pointer transition-colors duration-100 flex flex-col sm:flex-row items-start sm:items-center gap-1 sm:gap-3"
             onClick={(e) => {
               e.preventDefault();
+              setHoveredNavItem(null);
               navigate('/');
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
@@ -458,7 +457,7 @@ export default function App() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.8 }}
-              className="min-h-[calc(100vh-144px)] flex flex-col relative"
+              className="min-h-[calc(100vh-144px)] flex flex-col relative overflow-x-hidden"
             >
               {/* Hero Content - Takes up remaining space */}
               <div className="flex-1 flex items-center justify-center px-8 md:px-16 relative">
@@ -521,7 +520,7 @@ export default function App() {
 
                 {/* Hovered navigation icon - appears on nav hover */}
                 <AnimatePresence>
-                  {hoveredNavItem && (
+                  {hoveredNavItem && path === '/' && (
                     <motion.div
                       key={hoveredNavItem}
                       initial={{ opacity: 0, scale: 0.8 }}
@@ -602,10 +601,10 @@ export default function App() {
         {/* Secondary Navigation - starts at bottom of hero, sticks to top on scroll */}
         {!selectedProject && !showResume && !showProcessPage && !showWhatShapesMe && !showBlog && !selectedPost && (
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 1.8 }}
-            className={`py-4 sm:py-6 px-4 sm:px-8 md:px-16 bg-background/95 backdrop-blur-sm border-t border-border/40 shadow-sm z-40 overflow-x-auto hidden md:block transition-none ${hasScrolled ? 'sticky top-[88px]' : 'fixed bottom-0 left-0 right-0'}`}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.4 }}
+            className="py-4 sm:py-6 px-4 sm:px-8 md:px-16 bg-background/95 backdrop-blur-sm border-t border-border/40 shadow-sm z-40 overflow-x-auto hidden md:block sticky top-[88px]"
             style={{ fontFamily: 'var(--font-lato)' }}
           >
             <div className="max-w-[1800px] mx-auto flex justify-center sm:gap-8 md:gap-12 gap-6 min-w-max sm:min-w-0">
@@ -649,6 +648,7 @@ export default function App() {
                 style={{ fontWeight: 900 }}
                 onClick={(e) => {
                   e.preventDefault();
+                  setHoveredNavItem(null);
                   navigate('/about');
                 }}
                 onMouseEnter={() => setHoveredNavItem('about')}
@@ -681,6 +681,7 @@ export default function App() {
                 style={{ fontWeight: 900 }}
                 onClick={(e) => {
                   e.preventDefault();
+                  setHoveredNavItem(null);
                   navigate('/resume');
                 }}
                 onMouseEnter={() => setHoveredNavItem('resume')}
@@ -697,6 +698,7 @@ export default function App() {
                 style={{ fontWeight: 900 }}
                 onClick={(e) => {
                   e.preventDefault();
+                  setHoveredNavItem(null);
                   navigate('/blog');
                 }}
               >

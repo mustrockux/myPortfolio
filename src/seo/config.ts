@@ -17,6 +17,14 @@ export const HOME_DESCRIPTION = `${IDENTITY_DESCRIPTION} Explore selected produc
 
 export const HOME_H1 = 'Roxanne Mustafa'
 
+export const HOME_FOCUS_AREAS = [
+  'AI',
+  'Developer Tools',
+  'Observability',
+  'SaaS',
+  'Enterprise Systems',
+] as const
+
 export const HOME_POSITIONING =
   'Staff Product Designer working across AI, developer tools, observability, and complex enterprise systems.'
 

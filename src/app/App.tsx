@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, Fragment } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Mail, ChevronRight } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -15,9 +15,8 @@ import { BlogPost } from './components/BlogPost';
 import { featuredCaseStudies, projects, type Project } from '../data/projects';
 import { Seo } from '../seo/Seo';
 import {
+  HOME_FOCUS_AREAS,
   HOME_H1,
-  HOME_INTRO,
-  HOME_POSITIONING,
   LINKEDIN_URL,
   getSeoPage,
   workPath,
@@ -567,6 +566,28 @@ export default function App() {
                   >
                     Design. Balance. Create.
                   </p>
+                  <p
+                    className="relative z-10 mt-8 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 px-4"
+                    style={{
+                      fontFamily: 'var(--font-lato)',
+                      fontWeight: 700,
+                      fontSize: '11.5px',
+                      letterSpacing: '0.14em',
+                      textTransform: 'uppercase',
+                      color: 'hsl(0, 0%, 45%)',
+                    }}
+                  >
+                    {HOME_FOCUS_AREAS.map((area, index) => (
+                      <Fragment key={area}>
+                        {index > 0 && (
+                          <span aria-hidden="true" style={{ color: '#e67ce4' }}>
+                            •
+                          </span>
+                        )}
+                        <span>{area}</span>
+                      </Fragment>
+                    ))}
+                  </p>
                 </motion.div>
               </div>
 
@@ -680,40 +701,6 @@ export default function App() {
               </motion.a>
             </div>
           </motion.div>
-        )}
-
-        {!selectedProject && !showResume && !showProcessPage && !showWhatShapesMe && !showBlog && !selectedPost && (
-          <section
-            aria-label="Introduction"
-            className="pt-10 sm:pt-12 md:pt-16 pb-4 px-4 sm:px-8 md:px-16"
-          >
-            <div className="max-w-[1800px] mx-auto">
-              <div className="max-w-3xl">
-                <p
-                  className="text-foreground mb-6"
-                  style={{
-                    fontFamily: 'var(--font-lato)',
-                    fontWeight: 700,
-                    fontSize: '14px',
-                    letterSpacing: '0.04em',
-                    lineHeight: '1.6',
-                  }}
-                >
-                  {HOME_POSITIONING}
-                </p>
-                <p
-                  className="text-foreground"
-                  style={{
-                    fontFamily: '"EB Garamond", Georgia, serif',
-                    fontSize: '20px',
-                    lineHeight: '1.8',
-                  }}
-                >
-                  {HOME_INTRO}
-                </p>
-              </div>
-            </div>
-          </section>
         )}
 
         {/* My Process Section */}

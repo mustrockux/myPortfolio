@@ -20,6 +20,7 @@ import {
   HOME_POSITIONING,
   LINKEDIN_URL,
   getSeoPage,
+  workPath,
 } from '../seo/config';
 import balanceIcon from 'figma:asset/92bce02428686bcce9c41d88339ae8a5646ebba0.png';
 import penIcon from "figma:asset/6cd455197da7d4377698c1048f1f62600c81c809.png";
@@ -57,8 +58,23 @@ export default function App() {
   const selectedPost = path.startsWith('/blog/') ? (blogPosts.find(p => p.id === path.replace('/blog/', '')) ?? null) : null;
   const showResume = path === '/resume';
   const showProcessPage = path === '/process';
-  const showWhatShapesMe = path === '/about';
-  const selectedProject = path.startsWith('/work/') ? (projects.find(p => p.id === Number(path.replace('/work/', ''))) ?? null) : null;
+  const showWhatShapesMe = path === '/about' || path === '/about-me';
+  const workSegment = path.startsWith('/work/') ? path.slice('/work/'.length) : '';
+  const selectedProject = workSegment
+    ? (projects.find((p) => p.slug === workSegment || String(p.id) === workSegment) ?? null)
+    : null;
+
+  useEffect(() => {
+    if (path === '/about-me') {
+      navigate('/about', { replace: true });
+      return;
+    }
+    if (!workSegment || !selectedProject) return;
+    const canonical = workPath(selectedProject);
+    if (canonical !== path) {
+      navigate(canonical, { replace: true });
+    }
+  }, [path, workSegment, selectedProject, navigate]);
 
   // Keep the last viewed case study in sync for every entry path:
   // homepage clicks, /about links, direct URLs, and next-project navigation.
@@ -110,7 +126,7 @@ export default function App() {
     if (!selectedProject) return;
     const currentIndex = projects.findIndex(p => p.id === selectedProject.id);
     const nextProject = projects[(currentIndex + 1) % projects.length];
-    navigate(`/work/${nextProject.id}`);
+    navigate(workPath(nextProject));
     window.scrollTo({ top: 0, behavior: 'instant' });
   };
 

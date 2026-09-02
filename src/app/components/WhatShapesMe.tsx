@@ -3,7 +3,7 @@ import { X } from 'lucide-react';
 import { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import type { Project } from '../../data/projects';
-import { ABOUT_BIO } from '../../seo/config';
+import { ABOUT_BIO, workPath } from '../../seo/config';
 import conferenceImage from 'figma:asset/d231690d168aace877e3590ec36899953d768ba4.png';
 import audioEngineeringImage from 'figma:asset/0179ede01c91262d3f5550b376a8f81b794d6ec9.png';
 import designWorkshopImage from 'figma:asset/ef0510e639a02617380b3548f142a950929c046c.png';
@@ -164,7 +164,7 @@ export function WhatShapesMe({ onClose, caseStudies }: WhatShapesMeProps) {
                   {caseStudies.map((project) => (
                     <li key={project.id}>
                       <Link
-                        to={`/work/${project.id}`}
+                        to={workPath(project)}
                         className="text-foreground hover:text-[#e67ce4] transition-colors duration-300"
                         style={{
                           fontFamily: '"EB Garamond", Georgia, serif',

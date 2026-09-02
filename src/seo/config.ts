@@ -54,60 +54,70 @@ export const PERSON_KNOWS_ABOUT = [
 export const WORK_PAGES = [
   {
     id: 1,
+    slug: 'onboarding',
     title: 'Developer Onboarding',
     description:
       'Designed a comprehensive onboarding experience that guides new developers through the Chronosphere platform. Created interactive tutorials, contextual help, and progressive disclosure patterns that reduce time-to-value and increase product adoption across engineering teams.',
   },
   {
     id: 2,
+    slug: 'alerts',
     title: 'Alert Deciphering',
     description:
       'Designed an intelligent alert management system that helps teams quickly understand and respond to critical system issues. The interface prioritizes clarity and actionability in high-pressure situations.',
   },
   {
     id: 3,
+    slug: 'comments',
     title: 'Comments & Collaboration',
     description:
       'Created an intuitive commenting and collaboration interface that enables teams to discuss metrics, traces, and alerts in context. Designed threaded conversations and @mentions to facilitate asynchronous team communication and decision-making around observability data.',
   },
   {
     id: 4,
+    slug: 'control-plane',
     title: 'Trace Control Plane',
     description:
       'Led the design of a sophisticated control plane for managing distributed tracing at scale. Created intuitive controls for sampling strategies, data retention policies, and trace routing that empower platform teams to optimize observability costs while maintaining critical visibility.',
   },
   {
     id: 5,
+    slug: 'ddx',
     title: 'Differential Diagnosis (DDx)',
     description:
       'Led the design of an advanced differential diagnosis tool that empowers SREs to compare system states and pinpoint root causes. Established a cohesive design system for data-dense interfaces while maintaining clarity and usability.',
   },
   {
     id: 6,
+    slug: 'tracing',
     title: 'Distributed Tracing',
     description:
       'Designed an intuitive distributed tracing interface that helps engineers quickly identify performance bottlenecks across microservices. Created a visual language that transforms complex trace data into actionable insights, reducing mean time to resolution by 60%.',
   },
   {
     id: 7,
+    slug: 'insights',
     title: 'Data & Insights',
     description:
       "As a Design Lead, I helped lead the creation of a comprehensive data visualization and analytics platform that empowers experimentation engineers, data scientists and machine learning engineers to understand their audience. I also managed product designers to work with cross-functional teams that deliver internal tools that drive strategic insights for Spotify's Engineering Community that serves millions of creators and listeners worldwide.",
   },
   {
     id: 8,
+    slug: 'tanzu',
     title: 'Tanzu App Transformer',
     description:
       'As Product Design Lead, designed an innovative platform that helps enterprises modernize legacy applications for cloud-native environments. Translated complex technical workflows into intuitive experiences that accelerate digital transformation initiatives.',
   },
   {
     id: 9,
+    slug: 'tracker',
     title: 'Tracker Redesign',
     description:
       'Served as Product Design Lead and Manager for a complete platform redesign. Modernized the agile project management experience while maintaining the speed and efficiency that teams depend on. Led design strategy, user research, and execution across web and mobile.',
   },
   {
     id: 10,
+    slug: 'rioja',
     title: 'Project Rioja',
     description:
       'Led product design for a sophisticated investment management platform serving institutional clients. Created elegant interfaces for complex financial instruments while ensuring regulatory compliance and building trust through thoughtful design decisions.',
@@ -115,8 +125,26 @@ export const WORK_PAGES = [
 ] as const
 
 export const CASE_STUDY_PATHS = WORK_PAGES.map(
-  (project) => `/work/${project.id}` as const,
+  (project) => `/work/${project.slug}` as const,
 )
+
+export function workPath(project: { slug: string }): string {
+  return `/work/${project.slug}`
+}
+
+export function findWorkPage(segment: string) {
+  return WORK_PAGES.find(
+    (project) => project.slug === segment || String(project.id) === segment,
+  )
+}
+
+export function workSlugForId(id: number): string {
+  const page = WORK_PAGES.find((project) => project.id === id)
+  if (!page) {
+    throw new Error(`Missing work slug for project ${id}`)
+  }
+  return page.slug
+}
 
 export const INDEXABLE_PATHS = ['/', '/about', ...CASE_STUDY_PATHS] as const
 
@@ -139,7 +167,7 @@ export function normalizePathname(pathname: string): string {
 export function getSeoPage(pathname: string): SeoPage {
   const path = normalizePathname(pathname)
 
-  if (path === '/about') {
+  if (path === '/about' || path === '/about-me') {
     return {
       path: '/about',
       title: ABOUT_TITLE,
@@ -149,12 +177,12 @@ export function getSeoPage(pathname: string): SeoPage {
     }
   }
 
-  const workMatch = path.match(/^\/work\/(\d+)$/)
+  const workMatch = path.match(/^\/work\/([^/]+)$/)
   if (workMatch) {
-    const work = WORK_PAGES.find((project) => project.id === Number(workMatch[1]))
+    const work = findWorkPage(workMatch[1])
     if (work) {
       return {
-        path,
+        path: workPath(work),
         title: `${work.title} | Roxanne Mustafa`,
         description: work.description,
         ogType: 'website',

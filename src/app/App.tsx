@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, Fragment } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Mail, ChevronRight } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -15,11 +15,11 @@ import { BlogPost } from './components/BlogPost';
 import { featuredCaseStudies, projects, type Project } from '../data/projects';
 import { Seo } from '../seo/Seo';
 import {
+  HOME_FOCUS_AREAS,
   HOME_H1,
-  HOME_INTRO,
-  HOME_POSITIONING,
   LINKEDIN_URL,
   getSeoPage,
+  workPath,
 } from '../seo/config';
 import balanceIcon from 'figma:asset/92bce02428686bcce9c41d88339ae8a5646ebba0.png';
 import penIcon from "figma:asset/6cd455197da7d4377698c1048f1f62600c81c809.png";
@@ -47,9 +47,10 @@ export default function App() {
   const [showContactForm, setShowContactForm] = useState(false);
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [hasScrolled, setHasScrolled] = useState(false);
-  const savedScrollPosition = useRef<number>(0);
   const lastViewedProjectId = useRef<number | null>(null);
+  const returnStack = useRef<Array<{ pathname: string; hash: string; scrollY: number }>>([]);
+  const pendingRestore = useRef<{ pathname: string; hash: string; scrollY: number } | null>(null);
+  const projectTopTimer = useRef<number | null>(null);
 
   // Derive page state from URL
   const path = location.pathname;
@@ -57,8 +58,30 @@ export default function App() {
   const selectedPost = path.startsWith('/blog/') ? (blogPosts.find(p => p.id === path.replace('/blog/', '')) ?? null) : null;
   const showResume = path === '/resume';
   const showProcessPage = path === '/process';
-  const showWhatShapesMe = path === '/about';
-  const selectedProject = path.startsWith('/work/') ? (projects.find(p => p.id === Number(path.replace('/work/', ''))) ?? null) : null;
+  const showWhatShapesMe = path === '/about' || path === '/about-me';
+  const workSegment = path.startsWith('/work/') ? path.slice('/work/'.length) : '';
+  const selectedProject = workSegment
+    ? (projects.find((p) => p.slug === workSegment || String(p.id) === workSegment) ?? null)
+    : null;
+  const showHomeHero =
+    !selectedProject &&
+    !showResume &&
+    !showProcessPage &&
+    !showWhatShapesMe &&
+    !showBlog &&
+    !selectedPost;
+
+  useEffect(() => {
+    if (path === '/about-me') {
+      navigate('/about', { replace: true });
+      return;
+    }
+    if (!workSegment || !selectedProject) return;
+    const canonical = workPath(selectedProject);
+    if (canonical !== path) {
+      navigate(canonical, { replace: true });
+    }
+  }, [path, workSegment, selectedProject, navigate]);
 
   // Keep the last viewed case study in sync for every entry path:
   // homepage clicks, /about links, direct URLs, and next-project navigation.
@@ -68,41 +91,86 @@ export default function App() {
     }
   }, [selectedProject]);
 
-  // Track whether user has scrolled
+  // Hovered section icons must not persist after leaving (mouseLeave
+  // often does not fire when the secondary nav unmounts on navigation).
   useEffect(() => {
-    const onScroll = () => setHasScrolled(window.scrollY > 4);
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
+    setHoveredNavItem(null);
+  }, [path]);
 
-  // Handle opening a project - save scroll position and navigate
-  const handleOpenProject = (project: Project) => {
-    savedScrollPosition.current = window.scrollY;
-    lastViewedProjectId.current = project.id;
-    setTimeout(() => window.scrollTo({ top: 0, behavior: 'instant' }), 300);
+  const captureReturnSpot = () => {
+    const spot = {
+      pathname: location.pathname,
+      hash: location.hash,
+      scrollY: window.scrollY,
+    };
+    const last = returnStack.current[returnStack.current.length - 1];
+    if (last && last.pathname === spot.pathname && last.hash === spot.hash) {
+      last.scrollY = spot.scrollY;
+      return;
+    }
+    returnStack.current.push(spot);
   };
 
-  // Handle closing a project - navigate home and scroll to project
-  const handleCloseProject = () => {
-    const projectId = selectedProject?.id ?? lastViewedProjectId.current;
-    if (projectId != null) {
-      lastViewedProjectId.current = projectId;
+  const closeToOrigin = () => {
+    setHoveredNavItem(null);
+    if (projectTopTimer.current != null) {
+      window.clearTimeout(projectTopTimer.current);
+      projectTopTimer.current = null;
     }
+    const spot = returnStack.current.pop() ?? { pathname: '/', hash: '', scrollY: 0 };
+    pendingRestore.current = spot;
+    navigate(spot.pathname || '/');
+  };
 
+  const goToBlogIndex = () => {
+    const last = returnStack.current[returnStack.current.length - 1];
+    if (last?.pathname === '/blog') {
+      returnStack.current.pop();
+    }
+    pendingRestore.current = null;
+    navigate('/blog');
+  };
+
+  const goHomeTop = () => {
+    setHoveredNavItem(null);
+    returnStack.current = [];
+    pendingRestore.current = null;
     navigate('/');
-    setTimeout(() => {
-      const scrollToProject = () => {
-        if (projectId == null) return;
-        const el = document.getElementById(`project-${projectId}`);
-        if (el) {
-          const y = el.getBoundingClientRect().top + window.pageYOffset - 120;
-          window.scrollTo({ top: y, behavior: 'smooth' });
-        }
-      };
-      scrollToProject();
-      setTimeout(scrollToProject, 200);
-      setTimeout(scrollToProject, 800);
-    }, 600);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    const onClick = (event: MouseEvent) => {
+      const link = (event.target as Element | null)?.closest?.('a');
+      if (!link) return;
+      const href = link.getAttribute('href');
+      if (!href || link.getAttribute('target') === '_blank') return;
+      if (/^(https?:|mailto:|tel:)/i.test(href)) return;
+      const url = new URL(href, window.location.href);
+      if (url.origin !== window.location.origin) return;
+      if (href.startsWith('#')) return;
+      if (url.pathname === path) return;
+      captureReturnSpot();
+    };
+    document.addEventListener('click', onClick, true);
+    return () => document.removeEventListener('click', onClick, true);
+  }, [path, location.hash, location.pathname]);
+
+  const handleOpenProject = (project: Project) => {
+    lastViewedProjectId.current = project.id;
+    if (projectTopTimer.current != null) {
+      window.clearTimeout(projectTopTimer.current);
+    }
+    projectTopTimer.current = window.setTimeout(() => {
+      if (window.location.pathname.startsWith('/work/')) {
+        window.scrollTo({ top: 0, behavior: 'instant' });
+      }
+      projectTopTimer.current = null;
+    }, 300);
+  };
+
+  const handleCloseProject = () => {
+    closeToOrigin();
   };
 
   // Handle going to next project
@@ -110,9 +178,48 @@ export default function App() {
     if (!selectedProject) return;
     const currentIndex = projects.findIndex(p => p.id === selectedProject.id);
     const nextProject = projects[(currentIndex + 1) % projects.length];
-    navigate(`/work/${nextProject.id}`);
+    navigate(workPath(nextProject));
     window.scrollTo({ top: 0, behavior: 'instant' });
   };
+
+  const scrollToSection = (id: string) => {
+    const element = document.getElementById(id);
+    if (!element) return;
+    const yOffset = -88;
+    const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+    window.scrollTo({ top: y, behavior: 'smooth' });
+  };
+
+  const goToHomeSection = (id: string) => {
+    setHoveredNavItem(null);
+    if (path === '/') {
+      scrollToSection(id);
+      return;
+    }
+    navigate(`/#${id}`);
+  };
+
+  useEffect(() => {
+    const spot = pendingRestore.current;
+    if (spot && path === (spot.pathname || '/')) {
+      const apply = () => window.scrollTo({ top: spot.scrollY, behavior: 'instant' });
+      apply();
+      const timers = [50, 200, 400, 800].map((ms) => window.setTimeout(apply, ms));
+      const done = window.setTimeout(() => {
+        if (pendingRestore.current === spot) pendingRestore.current = null;
+      }, 850);
+      return () => {
+        timers.forEach((timer) => window.clearTimeout(timer));
+        window.clearTimeout(done);
+      };
+    }
+    if (pendingRestore.current) return;
+    if (!showHomeHero) return;
+    const id = location.hash.replace(/^#/, '');
+    if (!id) return;
+    const timer = window.setTimeout(() => scrollToSection(id), 80);
+    return () => window.clearTimeout(timer);
+  }, [path, showHomeHero, location.hash]);
 
   const navIcons: Record<string, string> = {
     'work': penIcon,
@@ -174,7 +281,7 @@ export default function App() {
       {/* Process Page - Full Screen Overlay */}
       <AnimatePresence>
         {showProcessPage && (
-          <ProcessPage onClose={() => navigate('/')} />
+          <ProcessPage onClose={closeToOrigin} />
         )}
       </AnimatePresence>
 
@@ -182,7 +289,7 @@ export default function App() {
       <AnimatePresence>
         {showWhatShapesMe && (
           <WhatShapesMe
-            onClose={() => navigate('/')}
+            onClose={closeToOrigin}
             caseStudies={featuredCaseStudies}
           />
         )}
@@ -194,8 +301,8 @@ export default function App() {
           <div className="fixed inset-0 bg-background z-[90] overflow-y-auto">
             <BlogPost
               post={selectedPost}
-              onClose={() => navigate('/')}
-              onBack={() => navigate('/blog')}
+              onClose={closeToOrigin}
+              onBack={goToBlogIndex}
             />
           </div>
         )}
@@ -207,8 +314,11 @@ export default function App() {
           <div className="fixed inset-0 bg-background z-[80] overflow-y-auto">
             <BlogList
               posts={blogPosts}
-              onPostClick={(post) => navigate(`/blog/${post.id}`)}
-              onClose={() => navigate('/')}
+              onPostClick={(post) => {
+                captureReturnSpot();
+                navigate(`/blog/${post.id}`);
+              }}
+              onClose={closeToOrigin}
             />
           </div>
         )}
@@ -226,11 +336,10 @@ export default function App() {
           <motion.a 
             href="/"
             whileHover={{ opacity: 0.5, color: 'hsl(301, 68%, 69%)' }}
-            className="cursor-pointer transition-all duration-100 flex flex-col sm:flex-row items-start sm:items-center gap-1 sm:gap-3"
+            className="cursor-pointer transition-colors duration-100 flex flex-col sm:flex-row items-start sm:items-center gap-1 sm:gap-3"
             onClick={(e) => {
               e.preventDefault();
-              navigate('/');
-              window.scrollTo({ top: 0, behavior: 'smooth' });
+              goHomeTop();
             }}
           >
             <span 
@@ -369,13 +478,13 @@ export default function App() {
                 </motion.a>
                 <motion.a
                   whileHover={{ x: 8, color: 'hsl(301, 68%, 69%)' }}
-                  href="/about"
+                  href="#about"
                   className="text-lg tracking-[0.1em] py-3 border-b border-border/30"
                   style={{ fontWeight: 900 }}
                   onClick={(e) => {
                     e.preventDefault();
                     setMobileMenuOpen(false);
-                    setTimeout(() => navigate('/about'), 300);
+                    setTimeout(() => goToHomeSection('about'), 300);
                   }}
                 >
                   ABOUT ME
@@ -435,7 +544,7 @@ export default function App() {
       {/* Content wrapper with padding for fixed nav */}
       <div className="pt-[88px]">
         {/* Hero Section - Stark and Spacious - Hide immediately when project selected */}
-        {!selectedProject && !showResume && !showProcessPage && !showWhatShapesMe && !showBlog && !selectedPost && (
+        {showHomeHero && (
           <AnimatePresence>
             <motion.section 
               key="hero"
@@ -443,40 +552,66 @@ export default function App() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.8 }}
-              className="min-h-[calc(100vh-144px)] flex flex-col relative"
+              className="min-h-[calc(100vh-144px)] flex flex-col relative overflow-x-hidden"
             >
               {/* Hero Content - Takes up remaining space */}
               <div className="flex-1 flex items-center justify-center px-8 md:px-16 relative">
-                {/* Background balance icon - loads first */}
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ 
-                    opacity: hoveredNavItem ? 0 : 0.4, 
-                    scale: 1,
-                    rotate: hoveredNavItem ? 0 : [-1.5, 1.5, -1.5]
-                  }}
-                  transition={{ 
-                    opacity: { duration: 0.6, ease: "easeOut" },
-                    scale: { duration: 0.6, ease: "easeOut" },
-                    rotate: {
-                      duration: 6,
-                      repeat: Infinity,
-                      ease: "easeInOut"
-                    }
-                  }}
-                  className="absolute inset-0 flex items-center justify-center pointer-events-none"
-                  style={{ zIndex: 0 }}
+                {/* Background balance icon - loads first. Focus line is pinned to the
+                    image box so it stays just below the see-saw at any viewport. */}
+                <div
+                  className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none"
                 >
-                  <img 
-                    src={balanceIcon} 
-                    alt="" 
-                    className="w-full h-full object-contain"
-                    style={{ 
-                      maxWidth: '1152px',
-                      maxHeight: '800px'
-                    }}
-                  />
-                </motion.div>
+                  <div className="relative w-full max-w-[1152px]">
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{
+                        opacity: hoveredNavItem ? 0 : 0.4,
+                        scale: 1,
+                        rotate: hoveredNavItem ? 0 : [-1.5, 1.5, -1.5],
+                      }}
+                      transition={{
+                        opacity: { duration: 0.6, ease: "easeOut" },
+                        scale: { duration: 0.6, ease: "easeOut" },
+                        rotate: {
+                          duration: 6,
+                          repeat: Infinity,
+                          ease: "easeInOut",
+                        },
+                      }}
+                    >
+                      <img
+                        src={balanceIcon}
+                        alt=""
+                        className="h-auto w-full object-contain"
+                      />
+                    </motion.div>
+                    <motion.p
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 1, delay: 1.8, ease: "easeOut" }}
+                      className="absolute left-0 right-0 top-full z-10 mt-3 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 px-4"
+                      style={{
+                        fontFamily: "var(--font-lato)",
+                        fontWeight: 700,
+                        fontSize: "11.5px",
+                        letterSpacing: "0.14em",
+                        textTransform: "uppercase",
+                        color: "hsl(0, 0%, 45%)",
+                      }}
+                    >
+                      {HOME_FOCUS_AREAS.map((area, index) => (
+                        <Fragment key={area}>
+                          {index > 0 && (
+                            <span aria-hidden="true" style={{ color: "#e67ce4" }}>
+                              •
+                            </span>
+                          )}
+                          <span>{area}</span>
+                        </Fragment>
+                      ))}
+                    </motion.p>
+                  </div>
+                </div>
 
                 {/* Hovered navigation icon - appears on nav hover */}
                 <AnimatePresence>
@@ -497,8 +632,7 @@ export default function App() {
                           ease: "easeInOut"
                         }
                       }}
-                      className="absolute inset-0 flex items-center justify-center pointer-events-none"
-                      style={{ zIndex: 0 }}
+                      className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none"
                     >
                       <img 
                         src={navIcons[hoveredNavItem]} 
@@ -552,19 +686,19 @@ export default function App() {
                     Design. Balance. Create.
                   </p>
                 </motion.div>
-              </div>
 
+              </div>
             </motion.section>
           </AnimatePresence>
         )}
 
         {/* Secondary Navigation - starts at bottom of hero, sticks to top on scroll */}
-        {!selectedProject && !showResume && !showProcessPage && !showWhatShapesMe && !showBlog && !selectedPost && (
+        {showHomeHero && (
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 1.8 }}
-            className={`py-4 sm:py-6 px-4 sm:px-8 md:px-16 bg-background/95 backdrop-blur-sm border-t border-border/40 shadow-sm z-40 overflow-x-auto hidden md:block transition-none ${hasScrolled ? 'sticky top-[88px]' : 'fixed bottom-0 left-0 right-0'}`}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.4 }}
+            className="py-4 sm:py-6 px-4 sm:px-8 md:px-16 bg-background/95 backdrop-blur-sm border-t border-border/40 shadow-sm z-40 overflow-x-auto hidden md:block sticky top-[88px]"
             style={{ fontFamily: 'var(--font-lato)' }}
           >
             <div className="max-w-[1800px] mx-auto flex justify-center sm:gap-8 md:gap-12 gap-6 min-w-max sm:min-w-0">
@@ -603,12 +737,12 @@ export default function App() {
               <motion.a
                 whileHover={{ color: 'hsl(301, 68%, 69%)' }}
                 transition={{ duration: 0.1 }}
-                href="/about"
+                href="#about"
                 className="text-sm tracking-[0.1em] relative group"
                 style={{ fontWeight: 900 }}
                 onClick={(e) => {
                   e.preventDefault();
-                  navigate('/about');
+                  goToHomeSection('about');
                 }}
                 onMouseEnter={() => setHoveredNavItem('about')}
                 onMouseLeave={() => setHoveredNavItem(null)}
@@ -640,6 +774,7 @@ export default function App() {
                 style={{ fontWeight: 900 }}
                 onClick={(e) => {
                   e.preventDefault();
+                  setHoveredNavItem(null);
                   navigate('/resume');
                 }}
                 onMouseEnter={() => setHoveredNavItem('resume')}
@@ -656,6 +791,7 @@ export default function App() {
                 style={{ fontWeight: 900 }}
                 onClick={(e) => {
                   e.preventDefault();
+                  setHoveredNavItem(null);
                   navigate('/blog');
                 }}
               >
@@ -666,43 +802,12 @@ export default function App() {
           </motion.div>
         )}
 
-        {!selectedProject && !showResume && !showProcessPage && !showWhatShapesMe && !showBlog && !selectedPost && (
-          <section
-            aria-label="Introduction"
-            className="pt-10 sm:pt-12 md:pt-16 pb-4 px-4 sm:px-8 md:px-16"
-          >
-            <div className="max-w-[1800px] mx-auto">
-              <div className="max-w-3xl">
-                <p
-                  className="text-foreground mb-6"
-                  style={{
-                    fontFamily: 'var(--font-lato)',
-                    fontWeight: 700,
-                    fontSize: '14px',
-                    letterSpacing: '0.04em',
-                    lineHeight: '1.6',
-                  }}
-                >
-                  {HOME_POSITIONING}
-                </p>
-                <p
-                  className="text-foreground"
-                  style={{
-                    fontFamily: '"EB Garamond", Georgia, serif',
-                    fontSize: '20px',
-                    lineHeight: '1.8',
-                  }}
-                >
-                  {HOME_INTRO}
-                </p>
-              </div>
-            </div>
-          </section>
-        )}
-
         {/* My Process Section */}
-        {!selectedProject && !showResume && !showProcessPage && !showWhatShapesMe && !showBlog && !selectedPost && (
-          <MyProcess onLearnMore={() => navigate('/process')} />
+        {showHomeHero && (
+          <MyProcess onLearnMore={() => {
+            captureReturnSpot();
+            navigate('/process');
+          }} />
         )}
 
         {/* Projects Section */}
@@ -795,7 +900,7 @@ export default function App() {
           ) : showResume ? (
             <Resume 
               key="resume"
-              onClose={() => navigate('/')}
+              onClose={closeToOrigin}
             />
           ) : (
             <ProjectDetail 
@@ -809,7 +914,7 @@ export default function App() {
 
         {/* About Me Section */}
         <AnimatePresence mode="wait">
-          {!selectedProject && !showResume && !showProcessPage && !showWhatShapesMe && !showBlog && !selectedPost && (
+          {showHomeHero && (
             <motion.section
               key="about"
               initial={{ opacity: 0 }}
@@ -944,7 +1049,7 @@ export default function App() {
         </AnimatePresence>
 
         {/* Footer - Minimal */}
-        {!selectedProject && !showResume && !showProcessPage && !showWhatShapesMe && !showBlog && !selectedPost && (
+        {showHomeHero && (
           <motion.footer
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -1054,7 +1159,7 @@ export default function App() {
                       style={{ fontFamily: 'var(--font-lato)' }}
                     >
                       <a
-                        href="/about"
+                        href="#about"
                         className="text-foreground hover:text-[#e67ce4] transition-colors duration-300"
                         style={{ fontWeight: 700, fontSize: '14px', letterSpacing: '0.1em' }}
                       >

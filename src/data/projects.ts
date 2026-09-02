@@ -2,10 +2,11 @@ import ddxImage from 'figma:asset/59a3acf14a3ec77089ad2f0e718ebacc04bfe3f7.png'
 import pimcoImage from 'figma:asset/39dee249425481024c7c65d018b4c9c60f1ab7e3.png'
 import onboardingImage from 'figma:asset/d10532e2ac62cc0c3ec9f6599a0ed8f441f4b480.png'
 import traceControlImage from 'figma:asset/5d9c8fef4356aa5715e4c3f61ba6f6300045ab81.png'
-import { FEATURED_CASE_STUDY_IDS } from '../seo/config'
+import { FEATURED_CASE_STUDY_IDS, workSlugForId } from '../seo/config'
 
 export interface Project {
   id: number
+  slug: string
   title: string
   client: string
   year: string
@@ -15,7 +16,7 @@ export interface Project {
   images: string[]
 }
 
-export const projects: Project[] = [
+const projectRecords = [
   {
     id: 1,
     title: 'Developer Onboarding',
@@ -215,6 +216,11 @@ export const projects: Project[] = [
     images: [pimcoImage],
   },
 ]
+
+export const projects: Project[] = projectRecords.map((project) => ({
+  ...project,
+  slug: workSlugForId(project.id),
+}))
 
 export const featuredCaseStudies = FEATURED_CASE_STUDY_IDS.map((id) => {
   const project = projects.find((item) => item.id === id)

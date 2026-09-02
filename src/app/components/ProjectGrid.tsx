@@ -1,6 +1,7 @@
 import { motion, useScroll, useTransform } from "motion/react";
 import { Link } from "react-router-dom";
 import type { Project } from "../../data/projects";
+import { workPath } from "../../seo/config";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { ChronosphereThumbnail } from "./ChronosphereThumbnail";
 import { DistributedTracingVisual } from "./DistributedTracingVisual";
@@ -71,7 +72,7 @@ function ProjectCard({ project, index, onProjectClick }: { project: Project; ind
       className="group relative"
     >
       <Link
-        to={`/work/${project.id}`}
+        to={workPath(project)}
         className="cursor-pointer block text-inherit no-underline"
         onClick={() => onProjectClick(project)}
       >

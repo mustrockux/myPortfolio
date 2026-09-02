@@ -15,6 +15,61 @@
       ],
       "destination": "https://www.roxannemustafa.com/:path*",
       "permanent": true
+    },
+    {
+      "source": "/about-me",
+      "destination": "/about",
+      "permanent": true
+    },
+    {
+      "source": "/work/1",
+      "destination": "/work/onboarding",
+      "permanent": true
+    },
+    {
+      "source": "/work/2",
+      "destination": "/work/alerts",
+      "permanent": true
+    },
+    {
+      "source": "/work/3",
+      "destination": "/work/comments",
+      "permanent": true
+    },
+    {
+      "source": "/work/4",
+      "destination": "/work/control-plane",
+      "permanent": true
+    },
+    {
+      "source": "/work/5",
+      "destination": "/work/ddx",
+      "permanent": true
+    },
+    {
+      "source": "/work/6",
+      "destination": "/work/tracing",
+      "permanent": true
+    },
+    {
+      "source": "/work/7",
+      "destination": "/work/insights",
+      "permanent": true
+    },
+    {
+      "source": "/work/8",
+      "destination": "/work/tanzu",
+      "permanent": true
+    },
+    {
+      "source": "/work/9",
+      "destination": "/work/tracker",
+      "permanent": true
+    },
+    {
+      "source": "/work/10",
+      "destination": "/work/rioja",
+      "permanent": true
     }
   ],
   "rewrites": [
@@ -23,8 +78,8 @@
       "destination": "/about.html"
     },
     {
-      "source": "/work/:id",
-      "destination": "/work/:id.html"
+      "source": "/work/:slug",
+      "destination": "/work/:slug.html"
     },
     {
       "source": "/((?!robots\\.txt$|sitemap\\.xml$|og-image\\.png$|about\\.html$|work/).*)",

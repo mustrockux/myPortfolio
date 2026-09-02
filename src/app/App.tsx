@@ -566,31 +566,34 @@ export default function App() {
                   >
                     Design. Balance. Create.
                   </p>
-                  <p
-                    className="relative z-10 mt-8 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 px-4"
-                    style={{
-                      fontFamily: 'var(--font-lato)',
-                      fontWeight: 700,
-                      fontSize: '11.5px',
-                      letterSpacing: '0.14em',
-                      textTransform: 'uppercase',
-                      color: 'hsl(0, 0%, 45%)',
-                    }}
-                  >
-                    {HOME_FOCUS_AREAS.map((area, index) => (
-                      <Fragment key={area}>
-                        {index > 0 && (
-                          <span aria-hidden="true" style={{ color: '#e67ce4' }}>
-                            •
-                          </span>
-                        )}
-                        <span>{area}</span>
-                      </Fragment>
-                    ))}
-                  </p>
                 </motion.div>
               </div>
 
+              <motion.p
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 1, delay: 1.8, ease: "easeOut" }}
+                className="absolute bottom-8 md:bottom-10 left-0 right-0 z-10 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 px-4"
+                style={{
+                  fontFamily: 'var(--font-lato)',
+                  fontWeight: 700,
+                  fontSize: '11.5px',
+                  letterSpacing: '0.14em',
+                  textTransform: 'uppercase',
+                  color: 'hsl(0, 0%, 45%)',
+                }}
+              >
+                {HOME_FOCUS_AREAS.map((area, index) => (
+                  <Fragment key={area}>
+                    {index > 0 && (
+                      <span aria-hidden="true" style={{ color: '#e67ce4' }}>
+                        •
+                      </span>
+                    )}
+                    <span>{area}</span>
+                  </Fragment>
+                ))}
+              </motion.p>
             </motion.section>
           </AnimatePresence>
         )}

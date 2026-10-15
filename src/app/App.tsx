@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, Fragment } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Mail, ChevronRight } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { Analytics } from '@vercel/analytics/react';
 import { ProjectGrid } from './components/ProjectGrid';
 import { ProjectDetail } from './components/ProjectDetail';
 import { Resume } from './components/Resume';
@@ -1183,6 +1184,9 @@ export default function App() {
 
       {/* Contact Form Modal */}
       <ContactForm isOpen={showContactForm} onClose={() => setShowContactForm(false)} />
+      
+      {/* Vercel Web Analytics */}
+      <Analytics />
     </div>
   );
 }
